@@ -1,0 +1,10 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import './home.css';
+@import './auth.css';
+@import './registration.css';
+@import './cards.css';
+@import './metrics.css';
+
+:root {
+    color-scheme: light;
+}

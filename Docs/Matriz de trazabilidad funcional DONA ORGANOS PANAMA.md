@@ -530,7 +530,7 @@ La solicitud denominó la tercera gráfica “Altas y bajas de donantes”, mien
 | Tipo de contenido | Contenido editorial | `type` | Público/controlado | `legal`, `myth` o `faq` inicialmente |
 | Título/pregunta | Contenido editorial | `title` | Público | Validar longitud y escapar salida |
 | Descripción/respuesta | Contenido editorial | `body` | Público | Texto plano o HTML limitado y limpiado |
-| Enlace relacionado | Contenido editorial | `related_url` | Público | Opcional; URL y vigencia verificadas |
+| Multimedia relacionada | Contenido editorial | Relación `content_media` | Público/controlado | La base de datos conserva metadatos y ruta; el archivo reside en almacenamiento público administrado |
 | Visibilidad | Contenido editorial | `is_visible` | Funcional | Solo visibles en el portal |
 | Orden editorial | Contenido editorial | `sort_order` | Funcional | Entero positivo dentro del tipo |
 

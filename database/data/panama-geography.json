@@ -1,0 +1,1317 @@
+{
+  "provincia": [
+    {
+      "nombre": "Bocas del Toro",
+      "ced": "1",
+      "iso_3166_2": "PA-1",
+      "capital": "Bocas del Toro",
+      "distrito": [
+        {
+          "nombre": "Almirante",
+          "cabecera": "Almirante",
+          "corregimientos": [
+            "Almirante",
+            "Bajo Culubre",
+            "Barriada Guaymí",
+            "Barrio Francés",
+            "Cauchero",
+            "Ceiba",
+            "Miraflores",
+            "Nance de Riscó",
+            "Valle de Aguas Arriba",
+            "Valle de Riscó"
+          ]
+        },
+        {
+          "nombre": "Bocas del Toro",
+          "cabecera": "Bocas del Toro",
+          "corregimientos": [
+            "Bastimentos",
+            "Boca del Drago",
+            "Bocas del Toro",
+            "Punta Laurel",
+            "San Cristóbal",
+            "Tierra Oscura"
+          ]
+        },
+        {
+          "nombre": "Changuinola",
+          "cabecera": "Changuinola",
+          "corregimientos": [
+            "Barranco Adentro",
+            "Barriada 4 de Abril",
+            "Changuinola",
+            "Cochigro",
+            "El Empalme",
+            "El Silencio",
+            "Finca 12",
+            "Finca 30",
+            "Finca 4",
+            "Finca 51",
+            "Finca 6",
+            "Finca 60",
+            "Finca 66",
+            "Guabito",
+            "La Gloria",
+            "La Mesa",
+            "Las Delicias",
+            "Las Tablas"
+          ]
+        },
+        {
+          "nombre": "Chiriquí Grande",
+          "cabecera": "Chiriquí Grande",
+          "corregimientos": [
+            "Bajo Cedro",
+            "Chiriquí Grande",
+            "Miramar",
+            "Punta Peña",
+            "Punta Robalo",
+            "Rambala"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Coclé",
+      "ced": "2",
+      "iso_3166_2": "PA-2",
+      "capital": "Penonomé",
+      "distrito": [
+        {
+          "nombre": "Aguadulce",
+          "cabecera": "Aguadulce",
+          "corregimientos": [
+            "Aguadulce",
+            "Barrios Unidos",
+            "El Cristo",
+            "El Hato de San Juan de Dios",
+            "El Roble",
+            "Pocrí",
+            "Pueblos Unidos",
+            "Virgen del Carmen"
+          ]
+        },
+        {
+          "nombre": "Antón",
+          "cabecera": "Antón",
+          "corregimientos": [
+            "Antón",
+            "Caballero",
+            "Cabuya",
+            "El Chirú",
+            "El Retiro",
+            "El Valle",
+            "Juan Díaz",
+            "Río Hato",
+            "San Juan de Dios",
+            "Santa Rita"
+          ]
+        },
+        {
+          "nombre": "La Pintada",
+          "cabecera": "La Pintada",
+          "corregimientos": [
+            "El Harino",
+            "El Potrero",
+            "La Pintada",
+            "Las Lomas",
+            "Llano Grande",
+            "Llano Norte",
+            "Piedras Gordas"
+          ]
+        },
+        {
+          "nombre": "Natá",
+          "cabecera": "Natá de los Caballeros",
+          "corregimientos": [
+            "Capellanía",
+            "El Caño",
+            "Guzmán",
+            "Las Huacas",
+            "Natá",
+            "Toza",
+            "Villarreal"
+          ]
+        },
+        {
+          "nombre": "Olá",
+          "cabecera": "Olá",
+          "corregimientos": [
+            "El Copé",
+            "El Palmar",
+            "El Picacho",
+            "La Pava",
+            "Olá"
+          ]
+        },
+        {
+          "nombre": "Penonomé",
+          "cabecera": "Penonomé",
+          "corregimientos": [
+            "Boca de Tucué",
+            "Candelario Ovalle",
+            "Cañaveral",
+            "Chiguirí Arriba",
+            "Coclé",
+            "El Coco",
+            "General Victoriano Lorenzo",
+            "Las Minas",
+            "Pajonal",
+            "Penonomé",
+            "Riecito",
+            "Río Grande",
+            "Río Indio",
+            "San Miguel",
+            "Toabré",
+            "Tulú"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Colón",
+      "ced": "3",
+      "iso_3166_2": "PA-3",
+      "capital": "Colón",
+      "distrito": [
+        {
+          "nombre": "Chagres",
+          "cabecera": "Nuevo Chagres",
+          "corregimientos": [
+            "Achiote",
+            "El Guabo",
+            "La Encantada",
+            "Nuevo Chagres",
+            "Palmas Bellas",
+            "Piña",
+            "Salud"
+          ]
+        },
+        {
+          "nombre": "Colón",
+          "cabecera": "Colón",
+          "corregimientos": [
+            "Barrio Norte",
+            "Barrio Sur",
+            "Buena Vista",
+            "Cativá",
+            "Ciricito",
+            "Cristóbal (Sector Atlántico)",
+            "Cristóbal Este",
+            "Escobal",
+            "Limón",
+            "Nueva Providencia",
+            "Puerto Pilón",
+            "Sabanitas",
+            "Salamanca",
+            "San Juan",
+            "Santa Rosa"
+          ]
+        },
+        {
+          "nombre": "Donoso",
+          "cabecera": "Miguel de la Borda",
+          "corregimientos": [
+            "Coclé del Norte",
+            "El Guásimo",
+            "Gobea",
+            "Miguel de la Borda",
+            "Río Indio"
+          ]
+        },
+        {
+          "nombre": "Portobelo",
+          "cabecera": "Portobelo",
+          "corregimientos": [
+            "Cacique",
+            "Garrote",
+            "Isla Grande",
+            "María Chiquita",
+            "Portobelo"
+          ]
+        },
+        {
+          "nombre": "Santa Isabel",
+          "cabecera": "Palenque",
+          "corregimientos": [
+            "Cuango",
+            "Miramar",
+            "Nombre de Dios",
+            "Palenque",
+            "Palmira",
+            "Playa Chiquita",
+            "Santa Isabel",
+            "Viento Frío"
+          ]
+        },
+        {
+          "nombre": "Omar Torrijos Herrera",
+          "cabecera": "Coclesito",
+          "corregimientos": [
+            "Nueva Esperanza",
+            "San José del General",
+            "San Juan de Turbe"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Chiriquí",
+      "ced": "4",
+      "iso_3166_2": "PA-4",
+      "capital": "David",
+      "distrito": [
+        {
+          "nombre": "Alanje",
+          "cabecera": "Alanje",
+          "corregimientos": [
+            "Canta Gallo",
+            "Divalá",
+            "El Tejar",
+            "Guarumal",
+            "Nuevo México",
+            "Palo Grande",
+            "Querévalo",
+            "Santiago de Alanje",
+            "Santo Tomás"
+          ]
+        },
+        {
+          "nombre": "Barú",
+          "cabecera": "Puerto Armuelles",
+          "corregimientos": [
+            "Baco",
+            "El Palmar",
+            "Limones",
+            "Manaca",
+            "Progreso",
+            "Puerto Tomás Armuelles",
+            "Rodolfo Aguilar Delgado"
+          ]
+        },
+        {
+          "nombre": "Boquerón",
+          "cabecera": "Boquerón",
+          "corregimientos": [
+            "Boquerón",
+            "Bágala",
+            "Cordillera",
+            "Guabal",
+            "Guayabal",
+            "Paraíso",
+            "Pedregal",
+            "Tijeras"
+          ]
+        },
+        {
+          "nombre": "Boquete",
+          "cabecera": "Bajo Boquete",
+          "corregimientos": [
+            "Alto Boquete",
+            "Bajo Boquete",
+            "Caldera",
+            "Jaramillo",
+            "Los Naranjos",
+            "Palmira"
+          ]
+        },
+        {
+          "nombre": "Bugaba",
+          "cabecera": "La Concepción",
+          "corregimientos": [
+            "Aserrío de Gariché",
+            "Bugaba",
+            "El Bongo",
+            "Gómez",
+            "La Concepción",
+            "La Estrella",
+            "San Andrés",
+            "San Isidro",
+            "Santa Marta",
+            "Santa Rosa",
+            "Santo Domingo",
+            "Solano",
+            "Sortová"
+          ]
+        },
+        {
+          "nombre": "David",
+          "cabecera": "David",
+          "corregimientos": [
+            "Bijagual",
+            "Chiriquí",
+            "Cochea",
+            "David",
+            "David Este",
+            "David Sur",
+            "Guacá",
+            "Las Lomas",
+            "Pedregal",
+            "San Carlos",
+            "San Pablo Nuevo",
+            "San Pablo Viejo"
+          ]
+        },
+        {
+          "nombre": "Dolega",
+          "cabecera": "Dolega",
+          "corregimientos": [
+            "Dos Ríos",
+            "Los Algarrobos",
+            "Los Anastacios",
+            "Potrerillos",
+            "Potrerillos Abajo",
+            "Rovira",
+            "San Francisco de Dolega",
+            "Tinajas"
+          ]
+        },
+        {
+          "nombre": "Gualaca",
+          "cabecera": "Gualaca",
+          "corregimientos": [
+            "Gualaca",
+            "Hornito",
+            "Los Angeles",
+            "Paja de Sombrero",
+            "Rincón"
+          ]
+        },
+        {
+          "nombre": "Remedios",
+          "cabecera": "Remedios",
+          "corregimientos": [
+            "El Nancito",
+            "El Porvenir",
+            "El Puerto",
+            "Remedios",
+            "Santa Lucía"
+          ]
+        },
+        {
+          "nombre": "Renacimiento",
+          "cabecera": "Río Sereno",
+          "corregimientos": [
+            "Breñón",
+            "Cañas Gordas",
+            "Dominical",
+            "Monte Lirio",
+            "Plaza de Caisán",
+            "Río Sereno",
+            "Santa Clara",
+            "Santa Cruz"
+          ]
+        },
+        {
+          "nombre": "San Felix",
+          "cabecera": "Las Lajas",
+          "corregimientos": [
+            "Juay",
+            "Lajas Adentro",
+            "Las Lajas",
+            "San Félix",
+            "Santa Cruz"
+          ]
+        },
+        {
+          "nombre": "San Lorenzo",
+          "cabecera": "Horconcitos",
+          "corregimientos": [
+            "Boca Chica",
+            "Boca del Monte",
+            "Horconcitos",
+            "San Juan",
+            "San Lorenzo"
+          ]
+        },
+        {
+          "nombre": "Tierras Altas",
+          "cabecera": "Volcán",
+          "corregimientos": [
+            "Cerro Punta",
+            "Cuesta de Piedra",
+            "Nueva California",
+            "Paso Ancho",
+            "Volcán"
+          ]
+        },
+        {
+          "nombre": "Tolé",
+          "cabecera": "Tolé",
+          "corregimientos": [
+            "Bella Vista",
+            "Cerro Viejo",
+            "El Cristo",
+            "Justo Fidel Palacios",
+            "Lajas de Tolé",
+            "Potrero de Caña",
+            "Quebrada de Piedra",
+            "Tolé",
+            "Veladero"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Darién",
+      "ced": "5",
+      "iso_3166_2": "PA-5",
+      "capital": "La Palma",
+      "distrito": [
+        {
+          "nombre": "Chepigana",
+          "cabecera": "La Palma",
+          "corregimientos": [
+            "Camoganti",
+            "Chepigana",
+            "Garachiné",
+            "Jaqué",
+            "La Palma",
+            "Puerto Piña",
+            "Sambú",
+            "Setegantí",
+            "Taimatí",
+            "Tucutí"
+          ]
+        },
+        {
+          "nombre": "Pinogana",
+          "cabecera": "El Real de Santa María",
+          "corregimientos": [
+            "Boca de Cupe",
+            "El Real de Santa María",
+            "Metetí",
+            "Paya",
+            "Pinogana",
+            "Púcuro",
+            "Wargandí",
+            "Yape",
+            "Yaviza"
+          ]
+        },
+        {
+          "nombre": "Santa Fe",
+          "cabecera": "Santa Fe",
+          "corregimientos": [
+            "Agua Fría",
+            "Cucunatí",
+            "Río Congo",
+            "Río Congo Arriba",
+            "Río Iglesias",
+            "Santa Fe",
+            "Zapallal​"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Herrera",
+      "ced": "6",
+      "iso_3166_2": "PA-6",
+      "capital": "Chitré",
+      "distrito": [
+        {
+          "nombre": "Chitré",
+          "cabecera": "Chitré",
+          "corregimientos": [
+            "Chitré",
+            "La Arena",
+            "Llano Bonito",
+            "Monagrillo",
+            "San Juan Bautista"
+          ]
+        },
+        {
+          "nombre": "Las Minas",
+          "cabecera": "Las Minas",
+          "corregimientos": [
+            "Chepo",
+            "Chumical",
+            "El Toro",
+            "Las Minas",
+            "Leones",
+            "Quebrada El Ciprián",
+            "Quebrada del Rosario"
+          ]
+        },
+        {
+          "nombre": "Los Pozos",
+          "cabecera": "Los Pozos",
+          "corregimientos": [
+            "El Calabacito",
+            "El Capurí",
+            "El Cedro",
+            "La Arena",
+            "La Pitaloza",
+            "Las Llanas",
+            "Los Cerritos",
+            "Los Cerros de Paja",
+            "Los Pozos"
+          ]
+        },
+        {
+          "nombre": "Ocú",
+          "cabecera": "Ocú",
+          "corregimientos": [
+            "Cerro Largo",
+            "El Tijera",
+            "Entradero del Castillo",
+            "Llano Grande",
+            "Los Llanos",
+            "Menchaca",
+            "Ocú",
+            "Peñas Chatas"
+          ]
+        },
+        {
+          "nombre": "Parita",
+          "cabecera": "Parita",
+          "corregimientos": [
+            "Cabuya",
+            "Llano de la Cruz",
+            "Los Castillos",
+            "Parita",
+            "París",
+            "Portobelillo",
+            "Potuga"
+          ]
+        },
+        {
+          "nombre": "Pesé",
+          "cabecera": "Pesé",
+          "corregimientos": [
+            "El Barrero",
+            "El Ciruelo",
+            "El Pedregoso",
+            "El Pájaro",
+            "Las Cabras",
+            "Pesé",
+            "Rincón Hondo",
+            "Sabanagrande"
+          ]
+        },
+        {
+          "nombre": "Santa María",
+          "cabecera": "Santa María",
+          "corregimientos": [
+            "Chupampa",
+            "El Limón",
+            "El Rincón",
+            "Los Canelos",
+            "Santa María"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Los Santos",
+      "ced": "7",
+      "iso_3166_2": "PA-7",
+      "capital": "Las Tablas",
+      "distrito": [
+        {
+          "nombre": "Guararé",
+          "cabecera": "Guararé",
+          "corregimientos": [
+            "El Espinal",
+            "El Hato",
+            "El Macano",
+            "Guararé",
+            "Guararé Arriba",
+            "La Enea",
+            "La Pasera",
+            "Las Trancas",
+            "Llano Abajo",
+            "Perales"
+          ]
+        },
+        {
+          "nombre": "Las Tablas",
+          "cabecera": "Las Tablas",
+          "corregimientos": [
+            "Bajo Corral",
+            "Bayano",
+            "El Carate",
+            "El Cocal",
+            "El Manantial",
+            "El Muñoz",
+            "El Pedregoso",
+            "El Sesteadero",
+            "La Laja",
+            "La Miel",
+            "La Palma",
+            "La Tiza",
+            "Las Palmitas",
+            "Las Tablas",
+            "Las Tablas Abajo",
+            "Nuario",
+            "Palmira",
+            "Peña Blanca",
+            "Río Hondo",
+            "San José",
+            "San Miguel",
+            "Santo Domingo",
+            "Valle Rico",
+            "Vallerriquito"
+          ]
+        },
+        {
+          "nombre": "Los Santos",
+          "cabecera": "La Villa de Los Santos",
+          "corregimientos": [
+            "Agua Buena",
+            "El Ejido",
+            "El Guásimo",
+            "La Colorada",
+            "La Espigadilla",
+            "La Villa de Los Santos",
+            "Las Cruces",
+            "Las Guabas",
+            "Llano Largo",
+            "Los Olivos",
+            "Los Ángeles",
+            "Sabanagrande",
+            "Santa Ana",
+            "Tres Quebradas",
+            "Villa Lourdes"
+          ]
+        },
+        {
+          "nombre": "Macaracas",
+          "cabecera": "Macaracas",
+          "corregimientos": [
+            "Bahía Honda",
+            "Bajos de Güera",
+            "Chupá",
+            "Corozal",
+            "El Cedro",
+            "Espino Amarillo",
+            "La Mesa",
+            "Las Palmas",
+            "Llano de Piedras",
+            "Macaracas",
+            "Mogollón"
+          ]
+        },
+        {
+          "nombre": "Pedasí",
+          "cabecera": "Pedasí",
+          "corregimientos": [
+            "Los Asientos",
+            "Mariabé",
+            "Oria Arriba",
+            "Pedasí",
+            "Purio"
+          ]
+        },
+        {
+          "nombre": "Pocrí",
+          "cabecera": "Pocrí",
+          "corregimientos": [
+            "El Cañafístulo",
+            "Lajamina",
+            "Paraíso",
+            "Paritilla",
+            "Pocrí"
+          ]
+        },
+        {
+          "nombre": "Tonosí",
+          "cabecera": "Tonosí",
+          "corregimientos": [
+            "Altos de Güera",
+            "Cambutal",
+            "Cañas",
+            "El Bebedero",
+            "El Cacao",
+            "El Cortezo",
+            "Flores",
+            "Guánico",
+            "Isla de Cañas",
+            "La Tronosa",
+            "Tonosí"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Panamá",
+      "ced": "8",
+      "iso_3166_2": "PA-8",
+      "capital": "Ciudad de Panamá",
+      "distrito": [
+        {
+          "nombre": "Balboa",
+          "cabecera": "San Miguel",
+          "corregimientos": [
+            "La Ensenada",
+            "La Esmeralda",
+            "La Guinea",
+            "Pedro González",
+            "Saboga",
+            "San Miguel"
+          ]
+        },
+        {
+          "nombre": "Chepo",
+          "cabecera": "Chepo",
+          "corregimientos": [
+            "Cañita",
+            "Chepillo",
+            "Chepo",
+            "El Llano",
+            "Las Margaritas",
+            "Madugandí",
+            "Santa Cruz de Chinina",
+            "Tortí"
+          ]
+        },
+        {
+          "nombre": "Chimán",
+          "cabecera": "Chimán",
+          "corregimientos": [
+            "Brujas",
+            "Chimán",
+            "Gonzalo Vásquez",
+            "Pásiga",
+            "Unión Santeña"
+          ]
+        },
+        {
+          "nombre": "Panamá",
+          "cabecera": "Panamá",
+          "corregimientos": [
+            "24 de Diciembre",
+            "Alcalde Díaz",
+            "Ancón",
+            "Bella Vista",
+            "Betania",
+            "Caimitillo",
+            "Calidonia",
+            "Chilibre",
+            "Curundú",
+            "Don Bosco",
+            "El Chorrillo",
+            "Ernesto Córdoba Campos",
+            "Juan Díaz",
+            "Las Cumbres",
+            "Las Garzas",
+            "Las Mañanitas",
+            "Pacora",
+            "Parque Lefevre",
+            "Pedregal",
+            "Pueblo Nuevo",
+            "Río Abajo",
+            "San Felipe",
+            "San Francisco",
+            "San Martín",
+            "Santa Ana",
+            "Tocumen"
+          ]
+        },
+        {
+          "nombre": "San Miguelito",
+          "cabecera": "San Miguelito",
+          "corregimientos": [
+            "Amelia Denis De Icaza",
+            "Arnulfo Arias",
+            "Belisario Frías",
+            "Belisario Porras",
+            "José Domingo Espinar",
+            "Mateo Iturralde",
+            "Omar Torrijos",
+            "Rufina Alfaro",
+            "Victoriano Lorenzo"
+          ]
+        },
+        {
+          "nombre": "Taboga",
+          "cabecera": "Taboga",
+          "corregimientos": [
+            "Otoque Occidente",
+            "Otoque Oriente",
+            "Taboga"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Panamá Oeste",
+      "ced": "13",
+      "iso_3166_2": "PA-10",
+      "capital": "La Chorrera",
+      "distrito": [
+        {
+          "nombre": "Arraiján",
+          "cabecera": "Arraiján",
+          "corregimientos": [
+            "Arraiján",
+            "Burunga",
+            "Cerro Silvestre",
+            "Juan Demóstenes Arosemena",
+            "Nuevo Emperador",
+            "Santa Clara",
+            "Vacamonte",
+            "Veracruz",
+            "Vista Alegre"
+          ]
+        },
+        {
+          "nombre": "Capira",
+          "cabecera": "Capira",
+          "corregimientos": [
+            "Caimito",
+            "Campana",
+            "Capira",
+            "Cermeño",
+            "Cirí Grande",
+            "Cirí de Los Sotos",
+            "El Cacao",
+            "La Trinidad",
+            "Las Ollas Arriba",
+            "Lídice",
+            "Santa Rosa",
+            "Villa Carmen",
+            "Villa Rosario"
+          ]
+        },
+        {
+          "nombre": "Chame",
+          "cabecera": "Chame",
+          "corregimientos": [
+            "Bejuco",
+            "Buenos Aires",
+            "Cabuya",
+            "Chame",
+            "Chicá",
+            "El Líbano",
+            "Las Lajas",
+            "Nueva Gorgona",
+            "Punta Chame",
+            "Sajalices",
+            "Sorá"
+          ]
+        },
+        {
+          "nombre": "La Chorrera",
+          "cabecera": "La Chorrera",
+          "corregimientos": [
+            "Amador",
+            "Arosemena",
+            "Barrio Balboa",
+            "Barrio Colón",
+            "El Arado",
+            "El Coco",
+            "Feuillet",
+            "Guadalupe",
+            "Herrera",
+            "Hurtado",
+            "Iturralde",
+            "La Represa",
+            "Los Díaz",
+            "Mendoza",
+            "Obaldía",
+            "Playa Leona",
+            "Puerto Caimito",
+            "Santa Rita"
+          ]
+        },
+        {
+          "nombre": "San Carlos",
+          "cabecera": "San Carlos",
+          "corregimientos": [
+            "El Espino",
+            "El Higo",
+            "Guayabito",
+            "La Ermita",
+            "La Laguna",
+            "Las Uvas",
+            "Los Llanitos",
+            "San Carlos",
+            "San José"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Veraguas",
+      "ced": "9",
+      "iso_3166_2": "PA-9",
+      "capital": "Santiago",
+      "distrito": [
+        {
+          "nombre": "Atalaya",
+          "cabecera": "Atalaya",
+          "corregimientos": [
+            "Atalaya",
+            "El Barrito",
+            "La Carrillo",
+            "La Montañuela",
+            "San Antonio"
+          ]
+        },
+        {
+          "nombre": "Calobre",
+          "cabecera": "Calobre",
+          "corregimientos": [
+            "Barnizal",
+            "Calobre",
+            "Chitra",
+            "El Cocla",
+            "El Potrero",
+            "La Laguna",
+            "La Raya de Calobre",
+            "La Tetilla",
+            "La Yeguada",
+            "Las Guías",
+            "Monjarás",
+            "San José"
+          ]
+        },
+        {
+          "nombre": "Cañazas",
+          "cabecera": "Cañazas",
+          "corregimientos": [
+            "Cañazas",
+            "Cerro de Plata",
+            "El Aromillo",
+            "El Picador",
+            "Las Cruces",
+            "Los Valles",
+            "San José",
+            "San Marcelo"
+          ]
+        },
+        {
+          "nombre": "La Mesa",
+          "cabecera": "La Mesa",
+          "corregimientos": [
+            "Bisvalles",
+            "Boró",
+            "El Higo",
+            "La Mesa",
+            "Llano Grande",
+            "Los Milagros",
+            "San Bartolo"
+          ]
+        },
+        {
+          "nombre": "Las Palmas",
+          "cabecera": "Las Palmas",
+          "corregimientos": [
+            "Cerro de Casa",
+            "Corozal",
+            "El María",
+            "El Prado",
+            "El Rincón",
+            "Las Palmas",
+            "Lolá",
+            "Manuel E. Amador Terrero",
+            "Pixvae",
+            "Puerto Vidal",
+            "San Martín de Porres",
+            "Viguí",
+            "Zapotillo"
+          ]
+        },
+        {
+          "nombre": "Mariato",
+          "cabecera": "Mariato",
+          "corregimientos": [
+            "Arenas",
+            "El Cacao",
+            "Loma de Quebro",
+            "Mariato",
+            "Tebario"
+          ]
+        },
+        {
+          "nombre": "Montijo",
+          "cabecera": "Montijo",
+          "corregimientos": [
+            "Costa Hermosa",
+            "Cébaco",
+            "Gobernadora",
+            "La Garceana",
+            "Leones",
+            "Montijo",
+            "Pilón",
+            "Unión del Norte"
+          ]
+        },
+        {
+          "nombre": "Río de Jesús",
+          "cabecera": "Río de Jesús",
+          "corregimientos": [
+            "Catorce de Noviembre",
+            "Las Huacas",
+            "Los Castillos",
+            "Río de Jesús",
+            "Utira"
+          ]
+        },
+        {
+          "nombre": "San Francisco",
+          "cabecera": "San Francisco",
+          "corregimientos": [
+            "Corral Falso",
+            "Los Hatillos",
+            "Remance",
+            "San Francisco",
+            "San José",
+            "San Juan"
+          ]
+        },
+        {
+          "nombre": "Santa Fe",
+          "cabecera": "Santa Fe",
+          "corregimientos": [
+            "Calovébora",
+            "El Alto",
+            "El Cuay",
+            "El Pantano",
+            "Gatuncito",
+            "Rubén Cantú",
+            "Río Luis",
+            "Santa Fe"
+          ]
+        },
+        {
+          "nombre": "Santiago",
+          "cabecera": "Santiago",
+          "corregimientos": [
+            "Canto del Llano",
+            "Carlos Santana Ávila",
+            "Edwin Fábrega",
+            "La Colorada",
+            "La Peña",
+            "La Raya de Santa María",
+            "Los Algarrobos",
+            "Nuevo Santiago",
+            "Ponuga",
+            "Rodrigo Luque",
+            "San Martín de Porres",
+            "San Pedro del Espino",
+            "Santiago",
+            "Santiago Este",
+            "Santiago Sur",
+            "Urracá"
+          ]
+        },
+        {
+          "nombre": "Soná",
+          "cabecera": "Soná",
+          "corregimientos": [
+            "Bahía Honda",
+            "Calidonia",
+            "Cativé",
+            "El Marañón",
+            "Guarumal",
+            "Hicaco",
+            "La Soledad",
+            "La Trinchera",
+            "Quebrada de Oro",
+            "Rodeo Viejo",
+            "Río Grande",
+            "Soná"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Comarca Emberá-Wounaan",
+      "ced": "11",
+      "iso_3166_2": "PA-EW",
+      "capital": "Unión Chocó",
+      "distrito": [
+        {
+          "nombre": "Cémaco",
+          "cabecera": "Unión Chocó",
+          "corregimientos": [
+            "Cirilo Guainora",
+            "Lajas Blancas",
+            "Manuel Ortega",
+            "Unión Chocó"
+          ]
+        },
+        {
+          "nombre": "Sambú",
+          "cabecera": "Puerto Indio",
+          "corregimientos": [
+            "Jingurudó",
+            "Río Sábalo"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Comarca Guna Yala",
+      "ced": "10",
+      "iso_3166_2": "PA-GY",
+      "capital": "Gaigirgordub",
+      "distrito": [
+        {
+          "nombre": "Guna Yala",
+          "cabecera": "Gaigirgordub",
+          "corregimientos": [
+            "Ailigandí",
+            "Narganá",
+            "Puerto Obaldía",
+            "Tubuala"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Comarca Naso Tjër Di",
+      "ced": "",
+      "iso_3166_2": "PA-NT",
+      "capital": "Sieyic",
+      "distrito": [
+        {
+          "nombre": "Naso Tjër Di",
+          "cabecera": "Sieyic",
+          "corregimientos": [
+            "Bonyik",
+            "San San Drui",
+            "El Teribe"
+          ]
+        }
+      ]
+    },
+    {
+      "nombre": "Comarca Ngäbe-Buglé",
+      "ced": "12",
+      "iso_3166_2": "PA-NB",
+      "capital": "Llano Tugrí",
+      "distrito": [
+        {
+          "nombre": "Besikó",
+          "cabecera": "Soloy",
+          "corregimientos": [
+            "Boca de Balsa",
+            "Camarón Arriba",
+            "Cerro Banco",
+            "Cerro de Patena",
+            "Emplanada de Chorcha",
+            "Niba",
+            "Nämnoní",
+            "Soloy"
+          ]
+        },
+        {
+          "nombre": "Jirondai",
+          "cabecera": "Samboa",
+          "corregimientos": [
+            "Bürí",
+            "Guariviara",
+            "Man Creek",
+            "Samboa",
+            "Tuwai"
+          ]
+        },
+        {
+          "nombre": "Kankintú",
+          "cabecera": "Bisira",
+          "corregimientos": [
+            "Bisira",
+            "Calante",
+            "Guoroní",
+            "Kankintú",
+            "Mününí",
+            "Piedra Roja",
+            "Tolote"
+          ]
+        },
+        {
+          "nombre": "Kusapín",
+          "cabecera": "Kusapín",
+          "corregimientos": [
+            "Bahía Azul",
+            "Cañaveral",
+            "Kusapín",
+            "Río Chiriquí",
+            "Tobobé"
+          ]
+        },
+        {
+          "nombre": "Mironó",
+          "cabecera": "Hato Pilón",
+          "corregimientos": [
+            "Cascabel",
+            "Hato Corotú",
+            "Hato Culantro",
+            "Hato Jobo",
+            "Hato Julí",
+            "Hato Pilón",
+            "Quebrada de Loro",
+            "Salto Dupí"
+          ]
+        },
+        {
+          "nombre": "Müna",
+          "cabecera": "Chichica",
+          "corregimientos": [
+            "Bakama",
+            "Cerro Caña",
+            "Cerro Puerco",
+            "Dikeri",
+            "Diko",
+            "Kikari",
+            "Kikintani",
+            "Krüa",
+            "Maraca",
+            "Mreeni",
+            "Munängätäte",
+            "Nibra",
+            "Roka",
+            "Sitio Prado",
+            "Siädakäbti",
+            "Umaní"
+          ]
+        },
+        {
+          "nombre": "Nole Duima",
+          "cabecera": "Cerro Iglesias",
+          "corregimientos": [
+            "Cerro Iglesias",
+            "Hato Chamí",
+            "Jädeberi",
+            "Lajero",
+            "Susama"
+          ]
+        },
+        {
+          "nombre": "Ñürüm",
+          "cabecera": "Buenos Aires",
+          "corregimientos": [
+            "Agua de Salud",
+            "Alto de Jesús",
+            "Buenos Aires",
+            "Cerro Pelado",
+            "El Bale",
+            "El Paredón",
+            "El Peñón",
+            "El Piro",
+            "El Piro N°2",
+            "Guayabito",
+            "Güibale"
+          ]
+        },
+        {
+          "nombre": "Santa Catalina o Calovébora (Bledeshia)",
+          "cabecera": "Santa Catalina o Calovébora",
+          "corregimientos": [
+            "Alto Bilingüe (Gdogüeshia)",
+            "Loma Yuca (Ijuicho)",
+            "San Pedrito (Jiküi)",
+            "Santa Catalina o Calovébora (Bledeshia)",
+            "Valle Bonito (Dogata)"
+          ]
+        }
+      ]
+    }
+  ]
+}
+

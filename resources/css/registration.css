@@ -1,0 +1,104 @@
+.registration-page { align-items: center; background: radial-gradient(circle at 10% 10%, rgba(91, 135, 230, .16), transparent 28%), radial-gradient(circle at 90% 90%, rgba(8, 127, 125, .13), transparent 25%), #f5f9fd; display: flex; min-height: 100vh; padding: 2.5rem 1rem; }
+.registration-shell { margin: 0 auto; max-width: 620px; text-align: center; width: 100%; }
+.registration-card { background: #fff; border: 1px solid var(--brand-line); border-radius: 1.6rem; box-shadow: 0 24px 65px rgba(29, 27, 132, .12); padding: clamp(2rem, 6vw, 3.2rem); text-align: left; }
+.step-indicator { color: var(--brand-muted); font-size: .82rem; font-weight: 700; margin-bottom: .7rem; text-align: center; }
+.identity-card-brand { display: block; margin-bottom: 1.25rem; text-align: left; }
+.step-indicator span { background: #e8efff; border-radius: 999px; color: var(--brand-blue-dark); margin-right: .25rem; padding: .35rem .7rem; }
+.registration-card h1 { color: var(--brand-navy); font-size: clamp(1.8rem, 5vw, 2.45rem); font-weight: 800; letter-spacing: -.04em; text-align: center; }
+.registration-intro { color: var(--brand-muted); margin: 0 auto 2rem; max-width: 480px; text-align: center; }
+.registration-card .form-label { color: #34445a; font-weight: 750; }
+.registration-card .form-label span { color: #c33149; }
+.registration-card .form-control { border: 2px solid #dce6f1; border-radius: .8rem; min-height: 52px; text-transform: uppercase; }
+.registration-card .form-control:focus { border-color: var(--brand-blue); box-shadow: 0 0 0 .2rem rgba(91, 135, 230, .14); }
+.registration-card .form-text { color: #738196; }
+.registration-submit { background: var(--brand-blue); border: 0; border-radius: 999px; font-weight: 750; min-height: 52px; width: 100%; }
+.registration-submit:hover { background: var(--brand-navy); }
+.registration-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+.identity-form-actions { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; }
+.identity-form-actions .btn { align-items: center; background-color: #1769ff; border-color: #1769ff; color: #fff; display: inline-flex; font-weight: 750; justify-content: center; min-height: 48px; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.identity-form-actions .btn:hover, .identity-form-actions .btn:focus-visible { background-color: #111827; border-color: #111827; box-shadow: 0 .5rem 1rem rgba(21, 53, 109, .18); color: #fff; transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) { .identity-form-actions .btn { transition: none; } .identity-form-actions .btn:hover, .identity-form-actions .btn:focus-visible { transform: none; } }
+.registration-cancel { color: var(--brand-blue-dark); display: block; font-size: .9rem; font-weight: 650; margin-top: 1.25rem; text-align: center; text-decoration: none; }
+.registration-security { color: #718096; font-size: .8rem; margin: 1.2rem auto 0; max-width: 480px; }
+.verified-card { text-align: center; }
+.verified-mark { align-items: center; background: #def7ea; border-radius: 50%; color: #167252; display: flex; font-size: 2rem; font-weight: 800; height: 70px; justify-content: center; margin: 0 auto 1.25rem; width: 70px; }
+.verified-card > p { color: var(--brand-muted); }
+.verified-card > .verification-status-title { color: var(--brand-blue-dark); font-size: calc(.74rem + 1px); }
+.verification-summary { background: #f4f7fb; border: 1px solid #dce6f1; border-radius: .9rem; margin: 1.5rem 0; padding: 1.1rem 1.25rem; text-align: left; }
+.verification-summary p { color: #24344b; margin: 0; }
+.verification-summary p + p { margin-top: .65rem; }
+.verification-gratitude { color: var(--brand-navy) !important; font-size: 1.08rem; font-weight: 750; }
+.verification-gratitude span { color: #c33149; margin-left: .2rem; }
+.verification-summary { border-bottom: 1px solid var(--brand-line); border-top: 1px solid var(--brand-line); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 1.75rem 0; padding: 1rem 0; text-align: left; }
+.verification-summary div { display: flex; gap: 1rem; justify-content: space-between; min-width: 0; padding: .35rem 1.25rem; }
+.verification-summary div:first-child { border-right: 1px solid var(--brand-line); padding-left: 0; }
+.verification-summary div:last-child { padding-right: 0; }
+.verification-summary-single { grid-template-columns: 1fr; }
+.verification-summary-single div:first-child { border-right: 0; padding-right: 0; }
+.verification-summary dt { color: #738196; }.verification-summary dd { font-weight: 700; margin: 0; text-align: right; }
+.registration-form-page { align-items: flex-start; }
+.registration-shell-wide { max-width: 980px; }
+.donor-form { padding: clamp(1.4rem, 4vw, 3rem); }
+.donor-form .form-control { text-transform: none; }
+.form-section { border: 0; border-top: 1px solid var(--brand-line); margin: 2rem 0 0; padding: 2rem 0 0; }
+.form-section legend { color: var(--brand-navy); float: none; font-size: 1.25rem; font-weight: 800; margin: 0 0 1rem; width: auto; }
+.section-help { color: var(--brand-muted); margin: -.5rem 0 1.25rem; }
+.contact-entry { background: #f7faff; border: 1px solid #dce6f1; border-radius: 1rem; margin-bottom: 1rem; padding: 1.25rem; }
+.contact-heading { align-items: center; color: var(--brand-navy); display: flex; justify-content: space-between; margin-bottom: 1rem; }
+.contact-required-alert { background: #fff3f4; border: 1px solid #efb8c0; border-radius: .8rem; color: #9f2035; font-weight: 700; margin-bottom: 1rem; padding: .85rem 1rem; }
+.medical-question { border-bottom: 1px solid #e5edf5; padding: 1rem 0; }
+.medical-question > p { color: #34445a; font-weight: 700; margin-bottom: .65rem; }
+.answer-options { display: flex; flex-wrap: wrap; gap: .75rem 1.5rem; }
+.answer-options label { color: var(--brand-muted); }
+.answer-options input { accent-color: var(--brand-blue); margin-right: .25rem; }
+.required-mark { color: #c33149; }
+.consent-check { border-bottom: 1px solid #e5edf5; padding: .8rem .5rem .8rem 1.9rem; }
+.consent-section { background: linear-gradient(145deg, #f8fbff, #eef4ff); border: 2px solid #bfd1f5; border-radius: 1.25rem; box-shadow: 0 14px 35px rgba(29, 27, 132, .08); margin-top: 2.5rem; padding: 1.5rem clamp(1rem, 3vw, 2rem) 2rem; }
+.consent-section legend { background: var(--brand-navy); border-radius: 999px; color: #fff; display: inline-flex; padding: .55rem 1.1rem; }
+.consent-section .form-select, .consent-section .form-control { background-color: #fff; }
+.consent-section .consent-check { background: rgba(255, 255, 255, .68); border: 1px solid #dbe6f7; border-radius: .75rem; margin-bottom: .65rem; padding: .85rem .85rem .85rem 2.25rem; }
+.scope-options { display: grid; gap: .85rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.scope-option { align-items: center; background: #fff; border: 2px solid #dbe6f7; border-radius: 1rem; color: var(--brand-navy); cursor: pointer; display: flex; font-weight: 750; gap: .75rem; min-height: 68px; padding: 1rem; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.scope-option:hover { border-color: var(--brand-blue); box-shadow: 0 8px 20px rgba(29, 27, 132, .08); transform: translateY(-1px); }
+.scope-option:has(input:checked) { background: #e8efff; border-color: var(--brand-blue-dark); box-shadow: 0 0 0 3px rgba(91, 135, 230, .14); }
+.scope-option .form-check-input { flex-shrink: 0; margin: 0; }
+.folio-display { background: #eef4ff; border: 2px dashed var(--brand-blue); border-radius: 1rem; color: var(--brand-navy); font-size: clamp(1.8rem, 7vw, 2.8rem); font-weight: 850; letter-spacing: .08em; margin: 1.5rem 0; padding: 1rem; }
+.withdrawal-check { background: #fff5f5; border-radius: .75rem; padding: 1rem 1rem 1rem 2.5rem; }
+.withdrawal-modal-check { border: 1px solid #f3cbd1; margin-top: 1.25rem; }
+.withdrawal-mark { background: #e8efff; color: var(--brand-blue-dark); }
+.withdrawal-summary { display: grid; gap: .7rem; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1.25rem auto; max-width: 680px; text-align: center; }
+.withdrawal-summary div { align-items: center; background: #fff7f8; border: 1px solid #efb8c0; border-radius: .8rem; box-shadow: 0 8px 20px rgba(190, 36, 57, .06); display: flex; gap: .35rem; justify-content: center; min-width: 0; padding: .85rem .65rem; }
+.withdrawal-summary dt { color: #64748b; font-size: .82rem; font-weight: 750; }
+.withdrawal-summary dd { color: var(--brand-navy); font-size: .9rem; font-weight: 850; margin: 0; white-space: nowrap; }
+.withdrawal-modal .modal-content { border: 0; border-radius: 1.25rem; box-shadow: 0 24px 70px rgba(15, 23, 42, .28); overflow: hidden; }
+.withdrawal-modal-brand { border-bottom: 1px solid #e2e8f0; color: var(--brand-navy); font-size: .88rem; font-weight: 850; letter-spacing: .025em; padding: 1rem 1.5rem; text-align: left; }
+.withdrawal-modal .modal-body { padding: 2rem 2rem 1.25rem; text-align: center; }
+.withdrawal-modal-icon { align-items: center; background: #fff0f1; border: 1px solid #ffd3d8; border-radius: 50%; color: #dc3545; display: inline-flex; font-size: 1.7rem; font-weight: 850; height: 64px; justify-content: center; margin-bottom: 1rem; width: 64px; }
+.session-expired-icon { background: #eef4ff; border-color: #c9d9fb; color: var(--brand-blue-dark); }
+.session-expired-icon svg { fill: none; height: 38px; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; width: 38px; }
+.withdrawal-modal h2 { color: var(--brand-navy); font-size: 1.55rem; font-weight: 850; margin-bottom: .75rem; }
+.withdrawal-modal .modal-body > p:not(.auth-eyebrow) { color: #475569; font-size: 1rem; line-height: 1.6; margin: 0 auto 1.25rem; max-width: 440px; }
+.withdrawal-modal-document { align-items: center; background: #f5f8fc; border: 1px solid #dce6f1; border-radius: .75rem; display: flex; justify-content: space-between; padding: .8rem 1rem; text-align: left; }
+.withdrawal-modal-document span { color: #64748b; font-size: .86rem; font-weight: 700; }
+.withdrawal-modal-document strong { color: var(--brand-navy); }
+.withdrawal-modal .modal-footer { background: #f8fafc; border-top: 1px solid #e2e8f0; gap: .65rem; justify-content: center; padding: 1rem 2rem 1.25rem; }
+.withdrawal-modal .modal-footer .btn { min-width: 150px; }
+.captcha-box { align-items: center; display: flex; gap: .75rem; margin-bottom: .75rem; }
+.captcha-box img { border: 1px solid #cbd9eb; border-radius: .75rem; height: 65px; max-width: 100%; object-fit: contain; }
+.captcha-refresh { flex-shrink: 0; font-weight: 700; }
+.phone-control .form-control { border-left: 0; }
+.phone-prefix { background: #eef4ff; border: 2px solid #dce6f1; border-right: 0; color: var(--brand-navy); font-weight: 750; gap: .45rem; padding-inline: .8rem; }
+.phone-flag { font-size: 1.25rem; line-height: 1; }
+.phone-pipe { color: #91a4bd; font-size: 1.3rem; font-weight: 400; margin-left: .1rem; }
+.phone-control:focus-within .phone-prefix { border-color: var(--brand-blue); }
+.birth-date-control { position: relative; }
+.birth-date-control .form-control { border-radius: .8rem 0 0 .8rem; }
+.birth-date-calendar { background: #eef4ff; border: 2px solid #dce6f1; border-left: 0; color: var(--brand-navy); cursor: pointer; font-size: 1.2rem; padding-inline: .9rem; }
+.birth-date-control:focus-within .birth-date-calendar { border-color: var(--brand-blue); }
+.birth-date-picker { height: 100%; opacity: 0; pointer-events: none; position: absolute; right: 0; top: 0; width: 52px; }
+.birth-date-error { color: #dc3545; display: block; font-size: .875em; font-weight: 650; margin-top: .35rem; text-align: left; }
+@media (max-width: 575.98px) { .registration-form-page { padding-inline: .5rem; } .contact-entry { padding: 1rem; } }
+@media (max-width: 575.98px) { .withdrawal-summary { grid-template-columns: 1fr; } }
+@media (max-width: 575.98px) { .verification-summary { grid-template-columns: 1fr; } .verification-summary div { padding-inline: 0; } .verification-summary div:first-child { border-bottom: 1px solid var(--brand-line); border-right: 0; padding-bottom: .75rem; } .verification-summary div:last-child { padding-top: .75rem; } }
+@media (max-width: 480px) { .captcha-box { align-items: stretch; flex-direction: column; } .captcha-box img { width: 100%; } }
+@media (max-width: 575.98px) { .scope-options { grid-template-columns: 1fr; } }

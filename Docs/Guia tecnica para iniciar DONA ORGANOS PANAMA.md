@@ -200,7 +200,7 @@ No deben copiarse su dominio, tablas, identidad, reglas de visitas, pruebas de e
 | Runtime backend | PHP 8.3 o una versión posterior compatible y validada |
 | Framework | Laravel 13 |
 | Dependencias PHP | Composer 2 |
-| Base de datos | MySQL 8, fijando una versión exacta antes de iniciar |
+| Base de datos | MySQL 8.4 LTS |
 | Renderizado | Blade |
 | Interfaz | Bootstrap 5.3.8 |
 | Lógica del navegador | JavaScript modular |
@@ -650,7 +650,7 @@ Ejemplo conceptual, sin credenciales reales:
 APP_NAME="DONA ÓRGANOS PANAMÁ"
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://localhost:8001
 APP_TIMEZONE=America/Panama
 
 DB_CONNECTION=mysql
@@ -759,6 +759,12 @@ Se recomienda agregar integración continua en GitLab para ejecutar pruebas, for
 
 No deben ejecutarse Node/Vite en modo de desarrollo ni `php artisan serve` en producción.
 
+Para permitir los videos cortos del CMS, PHP-FPM debe configurarse con
+`upload_max_filesize = 25M` y `post_max_size = 32M`. Nginx debe usar
+`client_max_body_size 32M`. Después de modificar estos valores se deben
+reiniciar PHP-FPM y Nginx. Laravel mantiene adicionalmente su validación de
+formato MP4, tamaño máximo de 25 MB, duración, resolución y códecs.
+
 ---
 
 ## 16. Decisiones confirmadas
@@ -780,6 +786,13 @@ No deben ejecutarse Node/Vite en modo de desarrollo ni `php artisan serve` en pr
 - Se requiere un CMS interno limitado para administrar aspectos legales, mitos y preguntas frecuentes: crear, editar, eliminar, ordenar y mostrar u ocultar.
 - El CMS no es un constructor visual de páginas ni una instalación de WordPress; se implementará dentro de Laravel y persistirá en MySQL.
 - El mockup muestra una pausa de seguridad de 30 segundos, con cuenta regresiva, después de tres códigos posteriores incorrectos para la cédula demostrativa `8-123-1234`.
+- Las respuestas médicas se almacenarán como datos altamente sensibles y no determinarán la aceptación o el rechazo del registro.
+- El estado del donante solo puede ser `Activo` o `Baja`, por decisión del propio donante; no existe un flujo administrativo de aprobación.
+- Cada registro requiere al menos un contacto y puede incluir contactos adicionales, identificando uno como principal.
+- Género, parentesco, alcance de donación y respuestas de salud se implementarán como catálogos controlados.
+- El folio tendrá el formato `DC` + año + consecutivo de siete dígitos, por ejemplo `DC2026-0000001`.
+- El CMS utilizará visibilidad independiente de eliminación lógica, papelera, restauración y auditoría por usuario y fecha.
+- Los catálogos geográficos iniciales podrán actualizarse con datos oficiales mediante códigos estables, sin eliminar registros históricos.
 
 ---
 
@@ -789,14 +802,14 @@ Estas preguntas deben resolverse con los responsables correspondientes; no deben
 
 1. Lista definitiva de campos obligatorios y opcionales.
 2. Textos legales definitivos y sus versiones.
-3. Necesidad real de almacenar respuestas médicas.
+3. ~~Necesidad real de almacenar respuestas médicas.~~ Resuelta: se almacenarán con acceso restringido y protección reforzada.
 4. Procedimiento autorizado para solicitar y aprobar una baja.
 5. Si la administración podrá modificar datos en fases posteriores.
 6. Roles administrativos definitivos.
 7. Información mínima mostrada en la verificación pública.
-8. Si se permitirán varios contactos informados.
+8. ~~Si se permitirán varios contactos informados.~~ Resuelta: se exige al menos uno y se permiten contactos adicionales.
 9. Si habrá selección individual de órganos y tejidos.
-10. Versión exacta de MySQL para desarrollo y producción.
+10. ~~Versión exacta de MySQL para desarrollo y producción.~~ Resuelta: MySQL 8.4 LTS.
 11. Estrategia de envío de correo y proveedor institucional.
 12. Política de copias de seguridad, retención y recuperación.
 13. Necesidades de integración con OPT, MINSA, CSS u otros sistemas.
@@ -805,7 +818,7 @@ Estas preguntas deben resolverse con los responsables correspondientes; no deben
 16. Dominio, certificados, infraestructura y responsables de producción.
 17. Tiempo definitivo de la pausa de seguridad por intentos fallidos y si el tiempo será progresivo o escalonado.
 18. Si el CMS utilizará texto plano o un editor de formato enriquecido limitado.
-19. Si la eliminación editorial será lógica y recuperable o definitiva.
+19. ~~Si la eliminación editorial será lógica y recuperable o definitiva.~~ Resuelta: eliminación lógica, recuperable y auditada.
 
 ---
 
