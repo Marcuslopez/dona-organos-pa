@@ -5,7 +5,7 @@
     <header class="admin-header no-print"><div class="container-fluid admin-header-inner"><a class="admin-logo" href="{{ route('admin.dashboard') }}"><small>DONA ÓRGANOS PANAMÁ</small><span>Administración de donantes</span></a><div class="admin-user"><div><strong>{{ auth()->user()->name }}</strong><span>Administrador</span></div><form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="btn btn-outline-light btn-sm" type="submit">Cerrar sesión</button></form></div></div></header>
     <main class="admin-main"><div class="container-fluid admin-container">
         <div class="print-only print-heading"><strong>DONA ÓRGANOS PANAMÁ</strong><span>Expediente administrativo del donante</span></div>
-        <div class="detail-actions no-print"><a class="admin-back" href="{{ route('admin.dashboard') }}">← Volver al registro de donantes</a><button class="btn btn-primary rounded-pill" type="button" onclick="window.print()">Imprimir / Guardar PDF</button></div>
+        <div class="detail-actions no-print"><a class="admin-back" href="{{ route('admin.dashboard') }}">← Volver al dashboard donantes</a><button class="btn btn-primary rounded-pill" type="button" onclick="window.print()">Imprimir / Guardar PDF</button></div>
         <div class="donor-detail-heading"><div><p class="auth-eyebrow">Expediente administrativo</p><h1>Detalle del donante</h1><p>Información registrada para consulta institucional.</p></div></div>
 
         <section class="record-summary" aria-label="Resumen del registro">
@@ -51,6 +51,9 @@
             <div class="audit-heading"><strong>Evidencia técnica de auditoría</strong><button class="btn btn-outline-primary btn-sm rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#auditEvidence" aria-expanded="false" aria-controls="auditEvidence">Ver información técnica</button></div>
             <div class="collapse" id="auditEvidence"><div class="audit-content"><p>Información disponible para trazabilidad e investigación eventual de incidencias.</p><dl class="audit-grid"><div><dt>ID de solicitud</dt><dd>{{ $consent?->request_id ?: '—' }}</dd></div><div><dt>Dirección IP</dt><dd>{{ $consent?->ip_address ?: '—' }}</dd></div><div><dt>Versión del consentimiento</dt><dd>{{ $consent?->version ?: '—' }}</dd></div><div class="audit-wide"><dt>Navegador informado</dt><dd>{{ $consent?->user_agent ?: '—' }}</dd></div></dl></div></div>
         </section>
+        <nav class="detail-footer-actions no-print" aria-label="Acciones del detalle del donante">
+            <a class="btn btn-primary" href="{{ route('admin.dashboard') }}">Volver al dashboard donantes</a>
+        </nav>
         <footer class="print-only print-confidential">Documento confidencial para uso institucional. Impreso el {{ now()->timezone('America/Panama')->format('d/m/Y H:i') }} por {{ auth()->user()->name }}.</footer>
     </div></main>
 </div>

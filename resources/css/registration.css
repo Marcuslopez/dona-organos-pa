@@ -14,6 +14,9 @@
 .registration-submit { background: var(--brand-blue); border: 0; border-radius: 999px; font-weight: 750; min-height: 52px; width: 100%; }
 .registration-submit:hover { background: var(--brand-navy); }
 .registration-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+.registration-form-actions { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; margin-top: 1.25rem; }
+.registration-form-actions .btn { align-items: center; background: var(--brand-blue); border-color: var(--brand-blue); border-radius: .75rem; display: inline-flex; flex: 0 0 auto; font-weight: 750; justify-content: center; min-height: 48px; padding-inline: 1.25rem; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease; width: auto; }
+.registration-form-actions .btn:hover, .registration-form-actions .btn:focus-visible { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; transform: translateY(-1px); }
 .identity-form-actions { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; }
 .identity-form-actions .btn { align-items: center; background-color: #1769ff; border-color: #1769ff; color: #fff; display: inline-flex; font-weight: 750; justify-content: center; min-height: 48px; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
 .identity-form-actions .btn:hover, .identity-form-actions .btn:focus-visible { background-color: #111827; border-color: #111827; box-shadow: 0 .5rem 1rem rgba(21, 53, 109, .18); color: #fff; transform: translateY(-2px); }

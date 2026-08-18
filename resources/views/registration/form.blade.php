@@ -9,9 +9,9 @@
 @endphp
 <main class="registration-page registration-form-page">
     <div class="registration-shell registration-shell-wide">
-        <a class="auth-brand" href="{{ route('home') }}">DONA ÓRGANOS PANAMÁ</a>
         <form class="registration-card donor-form" method="POST" action="{{ $isUpdate ? route('registration.update.store') : ($isReactivation ? route('registration.reactivation.store') : route('registration.store')) }}" novalidate>
             @csrf
+            <a class="auth-brand identity-card-brand" href="{{ route('home') }}">DONA ÓRGANOS PANAMÁ</a>
             <p class="step-indicator"><span>Paso 2 de 2</span> Registro de voluntad</p>
             <h1>{{ $isUpdate ? 'Actualizar mis datos' : ($isReactivation ? 'Reactivar mi voluntad' : 'Registro de donante') }}</h1>
             <p class="registration-intro">{{ $isUpdate ? 'Revisa tus datos y contactos. Si cambias tus contactos o decisión de donación, emitiremos un carné actualizado.' : ($isReactivation ? 'Revisa y actualiza tus datos. Las respuestas médicas y el consentimiento deben completarse nuevamente.' : 'Completa tus datos, registra al menos un contacto y confirma tu voluntad.') }}</p>
@@ -109,7 +109,10 @@
                 <div class="mt-4"><label class="form-label" for="signedName">Firma electrónica: escribe tu nombre completo <span>*</span></label><input class="form-control @error('signed_name') is-invalid @enderror" id="signedName" name="signed_name" value="{{ old('signed_name') }}" data-person-name required>@error('signed_name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
             </fieldset>
 
-            <button class="btn btn-primary registration-submit" type="submit">{{ $isUpdate ? 'Confirmar actualización' : ($isReactivation ? 'Confirmar reactivación' : 'Registrar mi voluntad') }}</button>
+            <div class="registration-form-actions">
+                <button class="btn btn-primary registration-submit" type="submit">{{ $isUpdate ? 'Confirmar actualización' : ($isReactivation ? 'Confirmar reactivación' : 'Registrar mi voluntad') }}</button>
+                <a class="btn btn-primary registration-back" href="{{ route('home') }}">Volver al inicio</a>
+            </div>
             <p class="registration-security">La cédula validada, fecha de aceptación y datos técnicos de la sesión se conservarán como evidencia del consentimiento.</p>
         </form>
     </div>

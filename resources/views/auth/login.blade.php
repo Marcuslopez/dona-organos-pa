@@ -30,9 +30,11 @@
                     <input class="form-control @error('password') is-invalid @enderror" id="password" name="password" type="password" autocomplete="current-password" required>
                     @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-                <button class="btn btn-primary auth-submit" type="submit" data-login-submit>Ingresar</button>
+                <div class="auth-form-actions">
+                    <button class="btn btn-primary auth-submit" type="submit" data-login-submit>Ingresar</button>
+                    <a class="btn btn-primary auth-return" href="{{ route('home') }}">Volver al inicio</a>
+                </div>
             </form>
-            <a class="auth-return" href="{{ route('home') }}">← Volver al inicio</a>
         </section>
         <p class="auth-security-note">El acceso y los intentos fallidos pueden ser registrados por motivos de seguridad.</p>
     </div>

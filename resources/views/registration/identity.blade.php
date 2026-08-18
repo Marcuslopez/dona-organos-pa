@@ -45,7 +45,7 @@
                 </div>
                 <nav class="identity-form-actions" aria-label="Acciones de validación">
                     <button class="btn btn-primary" type="submit">Continuar</button>
-                    <a class="btn btn-primary" href="{{ route('home') }}">Inicio</a>
+                    <a class="btn btn-primary" href="{{ route('home') }}">Volver al inicio</a>
                 </nav>
             </form>
         </section>

@@ -14,10 +14,10 @@
 .auth-card .form-label { color: #34445a; font-size: .9rem; font-weight: 700; }
 .auth-card .form-control { border: 2px solid #dce6f1; border-radius: .75rem; min-height: 50px; }
 .auth-card .form-control:focus { border-color: var(--brand-blue); box-shadow: 0 0 0 .2rem rgba(91, 135, 230, .15); }
-.auth-submit { background: var(--brand-navy); border: 0; border-radius: 999px; font-weight: 750; min-height: 50px; width: 100%; }
-.auth-submit:hover { background: var(--brand-blue-dark); }
-.auth-submit:disabled { background: #94a3b8; cursor: not-allowed; }
-.auth-return { color: var(--brand-blue-dark); display: block; font-size: .9rem; font-weight: 650; margin-top: 1.4rem; text-align: center; text-decoration: none; }
+.auth-form-actions { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; margin-top: 1.25rem; }
+.auth-form-actions .btn { align-items: center; background: var(--brand-blue); border-color: var(--brand-blue); border-radius: .75rem; display: inline-flex; flex: 0 0 auto; font-weight: 750; justify-content: center; min-height: 48px; padding-inline: 1.25rem; text-decoration: none; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease; width: auto; }
+.auth-form-actions .btn:hover, .auth-form-actions .btn:focus-visible { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; transform: translateY(-1px); }
+.auth-form-actions .btn:disabled { background: #94a3b8; border-color: #94a3b8; cursor: not-allowed; transform: none; }
 .auth-security-note { color: #718096; font-size: .78rem; margin: 1.2rem auto 0; max-width: 390px; }
 .admin-app { background: #f3f6fb; color: var(--brand-ink); min-height: 100vh; }
 .admin-header { background: linear-gradient(105deg, #10134d, var(--brand-navy)); box-shadow: 0 8px 24px rgba(16, 19, 77, .18); color: #fff; position: sticky; top: 0; z-index: 1020; }
@@ -67,6 +67,9 @@
 .admin-table-footer-actions { align-items: center; display: flex; gap: .75rem; }.admin-download-csv { border-radius: .7rem; font-weight: 750; padding: .65rem 1rem; white-space: nowrap; }
 .admin-back { color: var(--brand-blue-dark); display: inline-block; font-weight: 700; margin-bottom: 1.25rem; text-decoration: none; }
 .detail-actions { align-items: center; display: flex; justify-content: space-between; margin-bottom: 1.25rem; }.detail-actions .admin-back { margin: 0; }
+.detail-footer-actions { display: flex; justify-content: flex-end; margin-top: 1.25rem; }
+.detail-footer-actions .btn { border-radius: .75rem; font-weight: 750; min-height: 48px; padding: .7rem 1.15rem; }
+.detail-footer-actions .btn:hover, .detail-footer-actions .btn:focus-visible { background: var(--brand-navy); border-color: var(--brand-navy); }
 .donor-detail-heading { align-items: center; display: flex; gap: 1rem; justify-content: space-between; margin-bottom: 1.5rem; }
 .detail-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .record-summary { background: linear-gradient(135deg, #171568, var(--brand-navy)); border-radius: 1.15rem; box-shadow: 0 12px 30px rgba(29, 27, 132, .14); color: #fff; display: grid; gap: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 1.25rem; overflow: hidden; }.record-summary div { border-right: 1px solid rgba(255, 255, 255, .16); padding: 1rem 1.25rem; }.record-summary div:last-child { border: 0; }.record-summary span, .record-summary strong { display: block; }.record-summary span { color: #bfd2fb; font-size: .72rem; font-weight: 700; margin-bottom: .25rem; text-transform: uppercase; }.record-summary strong { font-size: .95rem; }

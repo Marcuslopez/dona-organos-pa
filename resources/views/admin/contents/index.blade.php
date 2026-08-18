@@ -18,7 +18,7 @@
         <div class="container-fluid admin-container">
             <div class="admin-title-row">
                 <div><h1>Contenidos del portal</h1><p>Consulta los contenidos administrables antes de habilitar su edición.</p></div>
-                <div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary rounded-pill" href="{{ route('admin.dashboard') }}">Volver al dashboard</a><a class="btn btn-outline-primary rounded-pill" href="{{ route('home') }}" target="_blank" rel="noopener">Ver portal público</a></div>
+                <div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary rounded-pill" href="{{ route('admin.dashboard') }}">Volver al dashboard</a><a class="btn btn-outline-primary rounded-pill" href="{{ route('home') }}" target="_blank" rel="noopener">Volver al inicio</a></div>
             </div>
 
             @if (session('status'))

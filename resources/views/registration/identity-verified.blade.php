@@ -69,12 +69,15 @@
                     <a class="btn btn-outline-secondary" href="{{ route('home') }}">Volver al inicio</a>
                 </nav>
             @elseif (($verification['donor_status'] ?? null) !== 'withdrawn')
-                <a class="btn btn-primary w-100" href="{{ route('registration.form') }}">Continuar al formulario</a>
+                <nav class="registration-form-actions" aria-label="Acciones de registro">
+                    <a class="btn btn-primary" href="{{ route('registration.form') }}">Continuar al formulario</a>
+                    <a class="btn btn-primary" href="{{ route('home') }}">Volver al inicio</a>
+                </nav>
             @else
-                <a class="btn btn-primary w-100" href="{{ route('registration.reactivation.form') }}">Registrar nuevamente mi voluntad</a>
-            @endif
-            @if (($verification['donor_status'] ?? null) !== 'active')
-                <a class="registration-cancel" href="{{ route('home') }}">Volver al portal</a>
+                <nav class="registration-form-actions" aria-label="Acciones de reactivación">
+                    <a class="btn btn-primary" href="{{ route('registration.reactivation.form') }}">Registrar nuevamente mi voluntad</a>
+                    <a class="btn btn-primary" href="{{ route('home') }}">Volver al inicio</a>
+                </nav>
             @endif
         </section>
     </div>
