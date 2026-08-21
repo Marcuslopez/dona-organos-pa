@@ -2,8 +2,8 @@
 
 ## DONA ÓRGANOS PANAMÁ
 
-**Versión del documento:** 1.0  
-**Fecha:** 17/08/2026  
+**Versión del documento:** 1.1
+**Fecha:** 21/08/2026
 **Objetivo:** entregar al equipo de QA una guía funcional, verificable y organizada por módulos para validar el sistema.
 
 ## 1. Alcance
@@ -18,6 +18,7 @@ Este documento cubre los flujos implementados para:
 - Consulta administrativa, filtros y exportación CSV.
 - Métricas administrativas.
 - CMS de contenidos y archivos multimedia.
+- Contáctenos y mantenimiento administrativo de consultas.
 - Datos demostrativos.
 - Seguridad, permisos y validaciones transversales.
 
@@ -66,6 +67,8 @@ Por cada caso QA debe conservar:
 - Bloqueo temporal predeterminado: 30 segundos.
 - Vigencia predeterminada de identidad validada: 10 minutos, ajustable por ambiente.
 - El formulario de un donante nuevo y el formulario de actualización ya iniciados no deben quedar bloqueados por el vencimiento de esa validación.
+- Las sesiones de donantes y administradores vencen por inactividad según la configuración del ambiente; una actividad válida renueva únicamente el temporizador del perfil correspondiente.
+- Para pruebas unitarias puede configurarse un tiempo reducido de inactividad. Las vistas protegidas de donantes y administración deben respetar ese vencimiento.
 - Videos: MP4 o MOV, máximo 25 MB y 90 segundos.
 - Las direcciones, credenciales y tiempos efectivos deben confirmarse contra el archivo `.env` del ambiente de QA.
 
@@ -116,7 +119,8 @@ Por cada caso QA debe conservar:
 | AUT-005 | P1 | Recuperación del bloqueo | Esperar el período configurado e intentar con datos válidos. | El acceso vuelve a estar disponible. |
 | AUT-006 | P0 | Acceso directo sin sesión | Abrir una URL de administración en una ventana privada. | El sistema redirige al login. |
 | AUT-007 | P0 | Cerrar sesión | Activar “Cerrar sesión”. | La sesión se invalida y las rutas protegidas dejan de ser accesibles. |
-| AUT-008 | P1 | Expiración de sesión | Mantener la sesión inactiva hasta superar `SESSION_LIFETIME`. | La siguiente solicitud protegida exige autenticarse nuevamente. |
+| AUT-008 | P0 | Expiración por inactividad administrativa | Mantener inactiva la sesión administrativa hasta superar el tiempo configurado. | Se informa que la sesión finalizó, se invalida el acceso y las rutas administrativas exigen autenticarse nuevamente. |
+| AUT-009 | P1 | Renovación por actividad administrativa | Realizar una navegación o acción válida antes de que venza el temporizador. | El contador administrativo se renueva y la sesión continúa disponible. |
 
 ---
 
@@ -196,8 +200,8 @@ Por cada caso QA debe conservar:
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
-| DON-001 | P0 | Pantalla del donante activo | Validar una identidad activa. | Se muestra un saludo con el primer nombre, documento, cuenta regresiva, carné y botonera inferior. |
-| DON-002 | P1 | Cuenta regresiva | Mantener abierta la pantalla hasta que finalice. | Aparece un diálogo con icono de reloj y “Sesión finalizada”; las acciones protegidas dejan de estar disponibles. |
+| DON-001 | P0 | Pantalla del donante activo | Validar una identidad activa. | Se muestra un saludo con el primer nombre, documento, contador de inactividad, carné y botonera inferior. |
+| DON-002 | P0 | Expiración por inactividad del donante | Mantener la pantalla sin actividad hasta superar el tiempo configurado. | Aparece un diálogo con icono de reloj y “Sesión finalizada”; la sesión del donante se invalida y debe repetirse la validación de identidad para continuar. |
 | DON-003 | P1 | Imprimir o guardar carné | Activar el botón correspondiente. | Se abre la salida imprimible/PDF sin modificar el registro. |
 
 ## Flujo 5.2 — Actualización de datos
@@ -256,7 +260,7 @@ Por cada caso QA debe conservar:
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
-| QR-001 | P0 | Escanear carné activo | Escanear desde otro dispositivo usando una URL accesible en red. | Se abre la verificación pública y se informa que el registro está activo. |
+| QR-001 | P0 | Escanear carné activo | Escanear desde otro dispositivo usando una URL accesible desde el móvil. | Se abre la verificación pública y se informa que el registro está activo. En QA, APP_URL no puede apuntar a localhost ni a 127.0.0.1. |
 | QR-002 | P0 | Privacidad del QR | Revisar la página pública. | No se exponen nombre, cédula, contactos, información médica ni dirección. |
 | QR-003 | P1 | Contenido público | Revisar fecha/hora e identificador. | Muestra saludo genérico, “Voluntad registrada”, carné `CD-...` y agradecimiento. |
 | QR-004 | P0 | Carné revocado | Escanear el QR de un carné dado de baja. | No se presenta como vigente; se informa que el registro no está activo. |
@@ -412,9 +416,42 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 
 ---
 
-# Módulo 12. Datos demostrativos
+# Módulo 12. Contáctenos y mantenimiento administrativo de consultas
 
-## Flujo 12.1 — Sembrado y limpieza segura
+## Flujo 12.1 — Formulario público y notificaciones
+
+| ID | Prioridad | Caso | Pasos principales | Resultado esperado |
+|---|---|---|---|---|
+| CON-001 | P1 | Navegación y atención telefónica | Abrir el menú público y activar “Contáctenos”. | La opción se presenta entre Testimonios y Registrarme; el formulario muestra el teléfono 503-6033 y el horario de 8:00 a. m. a 4:00 p. m. |
+| CON-002 | P0 | Campos y aceptación obligatorios | Intentar enviar sin correo, consulta o aceptación de condiciones. | No se crea la consulta y se identifican claramente los campos o aceptación pendientes. |
+| CON-003 | P1 | Nombre opcional y formato | Enviar una consulta sin nombre; repetir con nombre válido y con minúsculas, números o espacios duplicados. | Sin nombre se permite el envío; cuando se proporciona, solo acepta letras, un espacio entre palabras y cada palabra con inicial mayúscula. |
+| CON-004 | P1 | Formato de correo | Ingresar un correo inválido y luego uno válido. | El formato inválido se rechaza; con correo válido se permite continuar si los demás requisitos se cumplen. |
+| CON-005 | P1 | Condiciones de uso y privacidad | Abrir el enlace junto al check de aceptación. | Se muestra el texto de privacidad, la referencia a Ley 81 de 2019 y Decreto 285 de 2021, y los enlaces externos configurados son funcionales. |
+| CON-006 | P0 | Envío identificado | Enviar consulta con nombre, correo, texto y aceptación válidos. | Se crea una consulta en estado Nueva con historial de creación; smtp4dev recibe el acuse para el remitente y la notificación interna para Administrador1. |
+| CON-007 | P1 | Envío sin nombre | Enviar consulta válida omitiendo el nombre. | El acuse omite el saludo personal y la notificación interna usa “Sin nombre” en el asunto y datos del remitente. |
+| CON-008 | P1 | Estructura de correos | Inspeccionar ambos mensajes en smtp4dev. | El remitente recibe el mensaje de recepción; soporte recibe asunto, nombre o “Sin nombre”, correo y texto íntegro de la consulta. |
+| CON-009 | P1 | Límite antiabuso | Enviar más de cinco consultas desde el mismo cliente durante un minuto. | El límite bloquea el exceso sin crear consultas ni enviar correos adicionales. |
+
+## Flujo 12.2 — Gestión administrativa de consultas
+
+| ID | Prioridad | Caso | Pasos principales | Resultado esperado |
+|---|---|---|---|---|
+| CON-010 | P0 | Acceso protegido | Abrir la gestión de consultas sin sesión o con sesión vencida. | Se redirige al login; no se expone el contenido de las consultas. |
+| CON-011 | P1 | Listado y filtros | Abrir el mantenimiento y filtrar por texto y estados Nueva, En proceso, Respondida y Cerrada. | La grilla muestra solo las consultas coincidentes y conserva los filtros aplicados. |
+| CON-012 | P0 | Tomar una consulta | Un administrador toma una consulta Nueva. | La consulta pasa a En proceso, se registra el responsable y el historial conserva la transición. |
+| CON-013 | P0 | Evitar atención simultánea | Dos administradores intentan tomar la misma consulta. | Solo uno queda asignado; el otro recibe un mensaje controlado y no puede responderla. |
+| CON-014 | P0 | Asignación por usuario master | El usuario master asigna una consulta a un administrador activo. | Se actualiza el responsable, se registra el historial y el administrador recibe una notificación por correo. |
+| CON-015 | P0 | Protección del enlace de asignación | Abrir el enlace de una notificación con sesión vencida; repetir con sesión activa del administrador asignado. | Sin sesión se exige login; con sesión activa y autorización válida se abre la consulta asignada. El correo no muestra el detalle sensible. |
+| CON-016 | P0 | Responder consulta | El responsable asignado redacta y envía una respuesta. | La respuesta queda registrada, se envía al correo del remitente y el estado pasa a Respondida. |
+| CON-017 | P1 | Cerrar consulta | Intentar cerrar una consulta nueva/en proceso y luego una respondida. | Solo una consulta Respondida puede pasar a Cerrada; después no admite nuevas respuestas. |
+| CON-018 | P1 | Trazabilidad | Revisar historial de una consulta creada, asignada, respondida y cerrada. | Se conservan acciones, usuario responsable, estado y fecha/hora de cada transición. |
+| CON-019 | P0 | Permisos por responsable | Intentar que un administrador no asignado consulte o responda una consulta de otro. | El acceso o acción se rechaza; el usuario master mantiene capacidad de supervisión y asignación. |
+
+---
+
+# Módulo 13. Datos demostrativos
+
+## Flujo 13.1 — Sembrado y limpieza segura
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
@@ -427,7 +464,7 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 
 ---
 
-# Módulo 13. Seguridad y comportamiento transversal
+# Módulo 14. Seguridad y comportamiento transversal
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
@@ -444,7 +481,7 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 
 ---
 
-# Módulo 14. Compatibilidad y desempeño básico
+# Módulo 15. Compatibilidad y desempeño básico
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
@@ -457,7 +494,7 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 
 ---
 
-# 15. Flujos integrales de aceptación
+# 16. Flujos integrales de aceptación
 
 Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 
@@ -521,9 +558,21 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 
 **Resultado:** consultas, exportación, impresión, métricas y permisos reflejan el mismo conjunto de datos.
 
+## E2E-06 — Consulta pública y atención administrativa
+
+1. Abrir el portal y acceder a “Contáctenos”.
+2. Enviar una consulta con aceptación de condiciones.
+3. Verificar el acuse al remitente y la notificación interna en smtp4dev.
+4. Iniciar sesión como usuario master y asignar la consulta.
+5. Abrirla como administrador asignado, tomarla y responderla.
+6. Verificar el correo de respuesta, el cambio de estado y el historial.
+7. Cerrar la consulta.
+
+**Resultado:** la consulta se atiende sin exponer datos a usuarios no autorizados y conserva trazabilidad desde la recepción hasta el cierre.
+
 ---
 
-# 16. Plantilla de registro de ejecución
+# 17. Plantilla de registro de ejecución
 
 | Campo | Valor |
 |---|---|
@@ -540,14 +589,14 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 | Defecto relacionado | |
 | Observaciones | |
 
-## 17. Criterio recomendado de salida
+## 18. Criterio recomendado de salida
 
 La versión puede pasar a la siguiente fase cuando:
 
 - Todos los casos P0 estén aprobados.
 - No existan defectos abiertos que comprometan datos personales, consentimiento, estado o unicidad del donante.
 - Los casos P1 principales estén aprobados o cuenten con una excepción formal aceptada.
-- Los cinco recorridos integrales estén aprobados.
+- Los seis recorridos integrales estén aprobados.
 - Se haya verificado respaldo, restauración, migraciones y configuración del ambiente objetivo.
 - Los valores de métricas, CSV, dashboard y base de datos sean consistentes.
 - Las altas, bajas, reactivaciones y modificaciones posean trazabilidad verificable.
