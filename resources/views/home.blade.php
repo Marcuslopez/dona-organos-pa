@@ -28,7 +28,8 @@
                     <li class="nav-item"><a class="nav-link" href="#aspectos-legales">Aspectos legales</a></li>
                     <li class="nav-item"><a class="nav-link" href="#mitos">Mitos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#preguntas">Preguntas frecuentes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#historias">Testimonios</a></li>
+                <li class="nav-item"><a class="nav-link" href="#historias">Testimonios</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ route('contact.create') }}">Contáctenos</a></li>
                 </ul>
                 <div class="nav-actions ms-lg-3">
                     <a class="button button-primary" href="{{ route('registration.identity') }}">Registrarme</a>

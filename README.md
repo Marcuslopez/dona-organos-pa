@@ -132,6 +132,22 @@ php artisan demo:purge
 La carga requiere `DEMO_DATA_ENABLED=true` y la ejecución explícita de
 `MetricsDemoSeeder`. No se debe habilitar correo saliente real para estos datos.
 
+### Usuario master de desarrollo
+
+El rol `master` administra las cuentas del panel, mientras que el rol
+`administrator` utiliza donantes, métricas y CMS. Para crear o actualizar la
+cuenta master únicamente en ambientes `local` o `testing`:
+
+```bash
+php artisan db:seed --class=DevelopmentMasterSeeder
+```
+
+Sus valores se configuran con `DEVELOPMENT_MASTER_NAME`,
+`DEVELOPMENT_MASTER_EMAIL` y `DEVELOPMENT_MASTER_PASSWORD`. La primera sesión
+obliga a sustituir la contraseña temporal. En certificación y producción no se
+debe ejecutar este seeder; la cuenta inicial debe aprovisionarse mediante el
+procedimiento seguro acordado con infraestructura.
+
 ## Módulos previstos
 
 1. Login y autorización de usuarios administrativos.

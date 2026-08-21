@@ -18,7 +18,7 @@
         <div class="container-fluid admin-container">
             <div class="admin-title-row">
                 <div><h1>Registro de donantes</h1><p>Consulta y revisa las voluntades registradas en el sistema.</p></div>
-                <div class="d-flex flex-wrap gap-2"><a class="btn btn-primary rounded-pill" href="{{ route('admin.metrics.index') }}">Ver métricas</a><a class="btn btn-primary rounded-pill" href="{{ route('admin.contents.index') }}">Gestionar CMS</a><a class="btn btn-outline-primary rounded-pill" href="{{ route('home') }}" target="_blank" rel="noopener">Volver al inicio</a></div>
+                <div class="d-flex flex-wrap gap-2"><a class="btn btn-primary rounded-pill" href="{{ route('admin.metrics.index') }}">Ver métricas</a><a class="btn btn-primary rounded-pill" href="{{ route('admin.contents.index') }}">Gestionar CMS</a><a class="btn btn-primary rounded-pill" href="{{ route('admin.contact-inquiries.index') }}">Mantenimiento de consultas</a>@if(auth()->user()->isMaster())<a class="btn btn-primary rounded-pill" href="{{ route('admin.users.index') }}">Gestionar usuarios</a>@endif<a class="btn btn-outline-primary rounded-pill" href="{{ route('home') }}" target="_blank" rel="noopener">Volver al inicio</a></div>
             </div>
 
             <form class="mockup-filters" method="GET" action="{{ route('admin.dashboard') }}" aria-label="Filtros de donantes">

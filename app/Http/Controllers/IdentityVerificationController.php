@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\IdentityProvider;
+use App\Http\Middleware\EnsureDonorSessionIsActive;
 use App\Http\Requests\VerifyIdentityRequest;
 use App\Services\DonorCardService;
 use Illuminate\Auth\Events\Lockout;
@@ -106,17 +107,16 @@ class IdentityVerificationController extends Controller
         RateLimiter::clear($key);
 
         $donorStatus = $donor?->status;
-        $expiresAt = $donor === null
-            ? null
-            : now()->addMinutes(config('identity.verification_ttl_minutes'));
-
         $request->session()->put('identity_verification', [
             'document_number' => $documentNumber,
             'verified_at' => now()->timestamp,
-            'expires_at' => $expiresAt?->timestamp,
             'donor_status' => $donorStatus,
             'document_code_hash' => $donor === null ? Hash::make($documentCode) : null,
             'document_code_fingerprint' => $donor === null ? $documentCodeFingerprint : null,
+        ]);
+        $request->session()->put([
+            EnsureDonorSessionIsActive::STARTED_AT_KEY => now()->timestamp,
+            EnsureDonorSessionIsActive::LAST_ACTIVITY_KEY => now()->timestamp,
         ]);
         $request->session()->regenerate();
 
@@ -129,10 +129,7 @@ class IdentityVerificationController extends Controller
     {
         $verification = session('identity_verification');
 
-        $hasExpiration = is_array($verification) && array_key_exists('expires_at', $verification);
-        $expiresAt = $hasExpiration ? $verification['expires_at'] : null;
-
-        if (! is_array($verification) || ! $hasExpiration || ($expiresAt !== null && $expiresAt < now()->timestamp)) {
+        if (! is_array($verification)) {
             session()->forget('identity_verification');
 
             return redirect()->route('registration.identity')->withErrors([

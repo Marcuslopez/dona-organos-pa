@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Contracts\IdentityProvider;
+use App\Http\Middleware\EnsureDonorSessionIsActive;
 use App\Models\SimulatedIdentity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
@@ -40,7 +41,8 @@ class IdentityVerificationTest extends TestCase
         ])->assertRedirect(route('registration.form'));
 
         $this->assertSame('8-123-1234', session('identity_verification.document_number'));
-        $this->assertNull(session('identity_verification.expires_at'));
+        $this->assertNotNull(session(EnsureDonorSessionIsActive::STARTED_AT_KEY));
+        $this->assertNotNull(session(EnsureDonorSessionIsActive::LAST_ACTIVITY_KEY));
         $this->get('/registro/identidad-validada')->assertOk()->assertSee('Identidad validada correctamente');
     }
 

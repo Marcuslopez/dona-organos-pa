@@ -11,6 +11,10 @@
             <h1 id="loginTitle">Acceso administrativo</h1>
             <p class="auth-intro">Ingresa con las credenciales autorizadas para continuar.</p>
 
+            @if (session('status'))
+                <div class="alert alert-warning" role="status">{{ session('status') }}</div>
+            @endif
+
             @if (session('login_retry_after'))
                 <div class="login-countdown" data-login-countdown="{{ (int) session('login_retry_after') }}" role="status" aria-live="polite">
                     <strong>Acceso pausado temporalmente</strong>

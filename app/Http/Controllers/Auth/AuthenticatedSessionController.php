@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnsureAdminSessionIsActive;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,9 +21,17 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
+        $request->session()->put([
+            EnsureAdminSessionIsActive::STARTED_AT_KEY => now()->timestamp,
+            EnsureAdminSessionIsActive::LAST_ACTIVITY_KEY => now()->timestamp,
+        ]);
         $request->user()->forceFill(['last_login_at' => now()])->save();
 
-        return redirect()->intended(route('admin.dashboard'));
+        $fallback = $request->user()->isMaster()
+            ? route('admin.users.index')
+            : route('admin.dashboard');
+
+        return redirect()->intended($fallback);
     }
 
     public function destroy(Request $request): RedirectResponse

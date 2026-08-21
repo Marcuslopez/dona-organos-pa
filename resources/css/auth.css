@@ -19,6 +19,10 @@
 .auth-form-actions .btn:hover, .auth-form-actions .btn:focus-visible { background: var(--brand-navy); border-color: var(--brand-navy); color: #fff; transform: translateY(-1px); }
 .auth-form-actions .btn:disabled { background: #94a3b8; border-color: #94a3b8; cursor: not-allowed; transform: none; }
 .auth-security-note { color: #718096; font-size: .78rem; margin: 1.2rem auto 0; max-width: 390px; }
+.admin-session-modal .modal-content { border: 0; border-radius: 1.25rem; box-shadow: 0 24px 65px rgba(16, 19, 77, .24); overflow: hidden; }
+.admin-session-modal .modal-body { padding: 2rem 2rem 1.25rem; }.admin-session-modal .modal-title { color: var(--brand-navy); font-size: 1.55rem; font-weight: 850; }.admin-session-modal p { color: var(--brand-muted); margin: .7rem auto 0; max-width: 390px; }
+.admin-session-clock { align-items: center; background: #e8efff; border: 3px solid #bfd2fb; border-radius: 50%; color: var(--brand-blue-dark); display: flex; font-size: 2rem; height: 68px; justify-content: center; margin: 0 auto 1rem; width: 68px; }
+.admin-session-remaining { color: #b42336; display: block; font-size: 1.15rem; margin-top: .7rem; }.admin-session-actions { border-top: 1px solid #e5ebf3; gap: .65rem; justify-content: flex-end; padding: 1rem 1.25rem; }.admin-session-actions .btn { border-radius: .7rem; font-weight: 750; min-height: 46px; }.admin-session-actions .btn:hover, .admin-session-actions .btn:focus-visible { background: var(--brand-navy); border-color: var(--brand-navy); }
 .admin-app { background: #f3f6fb; color: var(--brand-ink); min-height: 100vh; }
 .admin-header { background: linear-gradient(105deg, #10134d, var(--brand-navy)); box-shadow: 0 8px 24px rgba(16, 19, 77, .18); color: #fff; position: sticky; top: 0; z-index: 1020; }
 .admin-header-inner { align-items: center; display: flex; justify-content: space-between; min-height: 76px; padding-inline: clamp(1rem, 4vw, 3rem); }

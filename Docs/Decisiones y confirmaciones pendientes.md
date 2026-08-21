@@ -12,7 +12,7 @@ Este documento no representa defectos del sistema ni impide continuar las prueba
 |---|---|---|---|---|
 | Servicio oficial de identidad | En desarrollo se simula la validación de la combinación cédula y código posterior. | Proveedor, mecanismo de integración, credenciales, ambientes, disponibilidad y datos que devolverá el servicio oficial. | Institución / Tribunal Electoral / Seguridad | Antes de certificación |
 | Nivel de autenticación | La cédula y su código posterior permiten acceder a consulta, actualización, baja y reactivación. | Confirmar si esta combinación es suficiente o si se requerirá OTP, correo, teléfono u otro segundo factor para operaciones sensibles. | Seguridad / Legal / Negocio | Antes de certificación |
-| Tiempo de sesión | Para pruebas de donantes existentes está configurado temporalmente en 2 minutos. El alta nueva y la actualización ya iniciada no vencen mientras se completa el formulario. | Tiempo definitivo para consulta, actualización, baja y reactivación; definir también inactividad frente a duración absoluta. | Seguridad / Negocio | Antes de certificación |
+| Tiempo de sesión | Todos los flujos del donante usan vencimiento renovable por actividad. Para pruebas, la inactividad está configurada temporalmente en 2 minutos y se muestra una advertencia 30 segundos antes. | Definir el tiempo definitivo de inactividad para registro, consulta, actualización, baja y reactivación. | Seguridad / Negocio | Antes de certificación |
 | Intentos fallidos | Se permiten 3 intentos y una pausa temporal. | Duración definitiva del bloqueo, alcance por usuario/IP y procedimiento ante bloqueos reiterados. | Seguridad | Antes de certificación |
 | CAPTCHA | Se usa un CAPTCHA propio para pruebas. | Confirmar la solución aprobada para producción y sus requisitos de accesibilidad y privacidad. | Seguridad / Infraestructura | Antes de certificación |
 
@@ -133,4 +133,3 @@ Cada respuesta debe incorporarse a este documento indicando:
 - documento o correo que sirve como respaldo;
 - ambientes donde aplica;
 - cambio técnico requerido, si corresponde.
-

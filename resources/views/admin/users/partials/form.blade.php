@@ -1,0 +1,11 @@
+<div class="modal-body admin-user-form">
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label" for="name{{ $user?->id }}">Nombre completo <span class="text-danger">*</span></label><input class="form-control" id="name{{ $user?->id }}" name="name" value="{{ $user?->name }}" maxlength="120" required></div>
+        <div class="col-md-6"><label class="form-label" for="email{{ $user?->id }}">Correo electrónico <span class="text-danger">*</span></label><input class="form-control" id="email{{ $user?->id }}" name="email" type="email" value="{{ $user?->email }}" maxlength="255" required></div>
+        <div class="col-md-6"><label class="form-label" for="role{{ $user?->id }}">Rol <span class="text-danger">*</span></label><select class="form-select" id="role{{ $user?->id }}" name="role" required><option value="administrator" @selected(($user?->role ?? 'administrator') === 'administrator')>Administrador</option><option value="master" @selected($user?->role === 'master')>Master</option></select></div>
+        <div class="col-md-6 d-flex align-items-end"><div class="form-check form-switch mb-2"><input name="is_active" type="hidden" value="0"><input class="form-check-input" id="active{{ $user?->id }}" name="is_active" type="checkbox" value="1" @checked($user?->is_active ?? true)><label class="form-check-label" for="active{{ $user?->id }}">Usuario activo</label></div></div>
+        <div class="col-md-6"><label class="form-label" for="password{{ $user?->id }}">{{ $user ? 'Nueva contraseña temporal' : 'Contraseña temporal' }} <span class="text-danger">{{ $user ? '' : '*' }}</span></label><input class="form-control" id="password{{ $user?->id }}" name="password" type="password" autocomplete="new-password" @required(! $user)><div class="form-text">Mínimo 12 caracteres, mayúsculas, minúsculas y números.</div></div>
+        <div class="col-md-6"><label class="form-label" for="passwordConfirmation{{ $user?->id }}">Confirmar contraseña {{ $user ? '' : '*' }}</label><input class="form-control" id="passwordConfirmation{{ $user?->id }}" name="password_confirmation" type="password" autocomplete="new-password" @required(! $user)></div>
+    </div>
+    @if($user)<p class="alert alert-light border mt-3 mb-0">Si asignas una contraseña temporal nueva, el usuario deberá cambiarla al iniciar sesión.</p>@endif
+</div>

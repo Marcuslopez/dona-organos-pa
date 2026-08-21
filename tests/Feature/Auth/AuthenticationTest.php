@@ -32,6 +32,23 @@ class AuthenticationTest extends TestCase
         $this->assertNotNull($user->fresh()->last_login_at);
     }
 
+    public function test_active_master_is_redirected_directly_to_user_management(): void
+    {
+        $master = User::factory()->create([
+            'role' => 'master',
+            'password' => Hash::make('MasterAdministrator1'),
+            'is_active' => true,
+            'must_change_password' => false,
+        ]);
+
+        $this->post('/administracion/login', [
+            'email' => $master->email,
+            'password' => 'MasterAdministrator1',
+        ])->assertRedirect(route('admin.users.index'));
+
+        $this->assertAuthenticatedAs($master);
+    }
+
     public function test_invalid_credentials_are_rejected_with_a_generic_message(): void
     {
         User::factory()->create();

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\EnsureDonorSessionIsActive;
 use App\Mail\DonorCardMail;
 use App\Services\DonorCardService;
 use Database\Seeders\GeographyCatalogSeeder;
@@ -50,21 +51,6 @@ class DonorRegistrationTest extends TestCase
         $this->assertDatabaseHas('consents', ['donor_id' => $donorId, 'revoked_at' => null]);
         $this->assertDatabaseHas('donor_cards', ['donor_id' => $donorId, 'folio' => 'CD-0000001', 'revoked_at' => null]);
         $this->assertNull(session('identity_verification'));
-    }
-
-    public function test_new_donor_can_finish_registration_even_if_a_legacy_verification_expired(): void
-    {
-        $session = $this->verifiedSession();
-        $session['identity_verification']['expires_at'] = now()->subHour()->timestamp;
-
-        $this->withSession($session)
-            ->post(route('registration.store'), $this->validPayload())
-            ->assertRedirect(route('registration.completed'));
-
-        $this->assertDatabaseHas('donors', [
-            'document_number' => '8-123-1234',
-            'status' => 'active',
-        ]);
     }
 
     public function test_completed_registration_displays_card_and_independent_actions(): void
@@ -237,28 +223,6 @@ class DonorRegistrationTest extends TestCase
         Mail::assertSent(DonorCardMail::class, 1);
     }
 
-    public function test_started_update_form_can_be_saved_after_identity_timer_expires(): void
-    {
-        Mail::fake();
-        $payload = $this->validPayload();
-        $this->withSession($this->verifiedSession())->post(route('registration.store'), $payload);
-
-        $this->withSession($this->verifiedSession('active'))
-            ->get(route('registration.update.form'))
-            ->assertOk();
-
-        session()->put('identity_verification.expires_at', now()->subMinute()->timestamp);
-        $payload['phone'] = '6999-8888';
-
-        $this->post(route('registration.update.store'), $payload)
-            ->assertRedirect(route('registration.completed'));
-
-        $this->assertDatabaseHas('donors', [
-            'document_number' => '8-123-1234',
-            'phone' => '6999-8888',
-        ]);
-    }
-
     public function test_withdrawn_donor_can_reactivate_with_new_consent_card_and_history(): void
     {
         Mail::fake();
@@ -414,14 +378,17 @@ class DonorRegistrationTest extends TestCase
 
     private function verifiedSession(?string $status = null): array
     {
-        return ['identity_verification' => [
-            'document_number' => '8-123-1234',
-            'verified_at' => now()->timestamp,
-            'expires_at' => now()->addMinutes(15)->timestamp,
-            'donor_status' => $status,
-            'document_code_hash' => Hash::make('ABC123456'),
-            'document_code_fingerprint' => hash_hmac('sha256', 'ABC123456', (string) config('app.key')),
-        ]];
+        return [
+            'identity_verification' => [
+                'document_number' => '8-123-1234',
+                'verified_at' => now()->timestamp,
+                'donor_status' => $status,
+                'document_code_hash' => Hash::make('ABC123456'),
+                'document_code_fingerprint' => hash_hmac('sha256', 'ABC123456', (string) config('app.key')),
+            ],
+            EnsureDonorSessionIsActive::STARTED_AT_KEY => now()->timestamp,
+            EnsureDonorSessionIsActive::LAST_ACTIVITY_KEY => now()->timestamp,
+        ];
     }
 
     private function validPayload(): array

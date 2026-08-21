@@ -4,6 +4,7 @@
 @import './registration.css';
 @import './cards.css';
 @import './metrics.css';
+@import './contact.css';
 
 :root {
     color-scheme: light;

@@ -39,14 +39,8 @@
                 <h1 id="verifiedTitle">Identidad validada correctamente</h1>
                 <p>La identidad puede continuar con un nuevo registro de donante.</p>
             @endif
-            <dl class="verification-summary {{ empty($verification['expires_at']) ? 'verification-summary-single' : '' }}">
+            <dl class="verification-summary verification-summary-single">
                 <div><dt>Documento:</dt><dd>{{ $verification['document_number'] }}</dd></div>
-                @if (! empty($verification['expires_at']))
-                    <div>
-                        <dt>Sesión activa por:</dt>
-                        <dd id="identitySessionCountdown" data-expires-at="{{ $verification['expires_at'] }}">--:--</dd>
-                    </div>
-                @endif
             </dl>
             @if (($verification['donor_status'] ?? null) === 'active')
                 @if ($card && $cardPrintUrl)
@@ -108,25 +102,5 @@
         <form id="withdrawalForm" method="POST" action="{{ route('registration.withdraw') }}">@csrf</form>
     @endif
 
-    <div class="modal fade session-expired-modal" id="identitySessionExpired" tabindex="-1" aria-labelledby="identitySessionExpiredTitle" aria-hidden="true" data-redirect-url="{{ route('registration.identity') }}">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="withdrawal-modal-brand">DONA ÓRGANOS PANAMÁ</div>
-                <div class="modal-body text-center">
-                    <span class="withdrawal-modal-icon session-expired-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" role="presentation">
-                            <circle cx="12" cy="12" r="8.5"></circle>
-                            <path d="M12 7.5v5l3.25 2"></path>
-                        </svg>
-                    </span>
-                    <h2 id="identitySessionExpiredTitle">Sesión finalizada</h2>
-                    <p>Por seguridad, el tiempo disponible terminó. Debes validar nuevamente tu identidad para continuar.</p>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button class="btn btn-primary px-5" id="identitySessionExpiredButton" type="button">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
 @endsection
