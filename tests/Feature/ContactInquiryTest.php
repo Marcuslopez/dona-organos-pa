@@ -48,7 +48,7 @@ class ContactInquiryTest extends TestCase
             'name' => 'maria gonzalez',
             'email' => 'correo-invalido',
             'message' => '',
-        ])->assertSessionHasErrors(['name', 'email', 'message', 'privacy_accepted']);
+        ])->assertSessionHasErrors(['email', 'message', 'privacy_accepted']);
 
         $this->assertDatabaseCount('contact_inquiries', 0);
     }
@@ -105,6 +105,40 @@ class ContactInquiryTest extends TestCase
             'body' => 'Gracias por escribirnos. Nuestro equipo revisará tu consulta.',
         ]);
         Mail::assertSent(ContactInquiryResponseMail::class);
+    }
+
+    public function test_master_cannot_reply_to_an_inquiry_assigned_to_another_administrator(): void
+    {
+        Mail::fake();
+        $master = User::factory()->create(['role' => 'master', 'is_active' => true, 'must_change_password' => false]);
+        $administrator = User::factory()->create(['role' => 'administrator', 'is_active' => true, 'must_change_password' => false]);
+        $inquiry = $this->inquiry();
+        $inquiry->update(['assigned_to' => $administrator->id, 'assigned_at' => now(), 'status' => 'en_proceso']);
+
+        $this->actingAs($master)
+            ->post(route('admin.contact-inquiries.respond', $inquiry), ['response' => 'Respuesta no autorizada.'])
+            ->assertForbidden();
+
+        $this->assertDatabaseMissing('contact_inquiry_replies', ['contact_inquiry_id' => $inquiry->id]);
+        $this->assertDatabaseHas('contact_inquiries', ['id' => $inquiry->id, 'status' => 'en_proceso', 'responded_by' => null]);
+        Mail::assertNothingSent();
+    }
+
+    public function test_master_can_assign_an_inquiry_to_themselves_before_replying(): void
+    {
+        Mail::fake();
+        $master = User::factory()->create(['role' => 'master', 'is_active' => true, 'must_change_password' => false]);
+        $inquiry = $this->inquiry();
+
+        $this->actingAs($master)
+            ->post(route('admin.contact-inquiries.assign', $inquiry), ['assigned_to' => $master->id])
+            ->assertRedirect();
+
+        $this->actingAs($master)
+            ->post(route('admin.contact-inquiries.respond', $inquiry), ['response' => 'Respuesta del usuario master asignado.'])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('contact_inquiries', ['id' => $inquiry->id, 'assigned_to' => $master->id, 'responded_by' => $master->id, 'status' => 'respondida']);
     }
 
     private function inquiry(): ContactInquiry

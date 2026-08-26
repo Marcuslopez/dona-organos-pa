@@ -4,26 +4,17 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-RESULTS_DIR="$PROJECT_ROOT/test-data/results"
-TIMESTAMP="$(date '+%Y%m%d-%H%M%S')"
-REPORT="$RESULTS_DIR/validacion-metricas-$TIMESTAMP.txt"
-TEMP_REPORT="$RESULTS_DIR/.validacion-metricas-$TIMESTAMP.tmp"
 
 if [[ ! -f "$PROJECT_ROOT/artisan" ]]; then
     echo "Error: no se encontró artisan. Ejecuta este script desde una copia válida del repositorio." >&2
     exit 1
 fi
 
-mkdir -p "$RESULTS_DIR"
-
 echo "Generando validación de métricas..."
-echo "El reporte se guardará en: $REPORT"
+echo "La salida es temporal: se muestra únicamente en esta terminal."
 
 cd "$PROJECT_ROOT"
-trap 'rm -f "$TEMP_REPORT"' EXIT
-php artisan metrics:validate --no-ansi | tee "$TEMP_REPORT"
-mv "$TEMP_REPORT" "$REPORT"
-trap - EXIT
+php artisan metrics:validate --no-ansi
 
 echo
-echo "Validación finalizada. Reporte: $REPORT"
+echo "Validación finalizada."

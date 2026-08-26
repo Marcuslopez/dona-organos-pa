@@ -32,7 +32,7 @@ class ContactInquiryController extends Controller
     {
         $this->ensureVisible($request, $inquiry);
         $inquiry->load(['assignee', 'replies.author', 'history.actor']);
-        return view('admin.contact-inquiries.show', ['inquiry' => $inquiry, 'administrators' => $request->user()->isMaster() ? User::query()->where('is_active', true)->where('role', 'administrator')->orderBy('name')->get() : collect()]);
+        return view('admin.contact-inquiries.show', ['inquiry' => $inquiry, 'administrators' => $request->user()->isMaster() ? User::query()->where('is_active', true)->whereIn('role', ['administrator', 'master'])->orderBy('name')->get() : collect()]);
     }
 
     public function take(Request $request, ContactInquiry $inquiry): RedirectResponse
@@ -53,7 +53,7 @@ class ContactInquiryController extends Controller
     {
         abort_unless($request->user()->isMaster(), 403);
         $data = $request->validate(['assigned_to' => ['required', 'exists:users,id']]);
-        abort_unless(User::query()->whereKey($data['assigned_to'])->where('role', 'administrator')->where('is_active', true)->exists(), 422, 'Selecciona un administrador activo.');
+        abort_unless(User::query()->whereKey($data['assigned_to'])->whereIn('role', ['administrator', 'master'])->where('is_active', true)->exists(), 422, 'Selecciona un administrador activo.');
         $actor = $request->user();
         $changed = DB::transaction(function () use ($inquiry, $data, $actor) {
             $record = ContactInquiry::lockForUpdate()->findOrFail($inquiry->id);
@@ -75,7 +75,7 @@ class ContactInquiryController extends Controller
         $actor = $request->user();
         $reply = DB::transaction(function () use ($inquiry, $actor, $data) {
             $record = ContactInquiry::lockForUpdate()->findOrFail($inquiry->id);
-            $this->ensureCanHandle($actor, $record);
+            $this->ensureCanRespond($actor, $record);
             if (in_array($record->status, ['respondida', 'cerrada'], true)) abort(422, 'Esta consulta ya fue respondida o cerrada.');
             $before = $record->status;
             $reply = $record->replies()->create(['author_id' => $actor->id, 'body' => trim($data['response']), 'sent_at' => now()]);
@@ -103,4 +103,5 @@ class ContactInquiryController extends Controller
 
     private function ensureVisible(Request $request, ContactInquiry $inquiry): void { if (!$request->user()->isMaster() && $inquiry->assigned_to && $inquiry->assigned_to !== $request->user()->id) abort(403); }
     private function ensureCanHandle(User $user, ContactInquiry $inquiry): void { if (!$user->isMaster() && $inquiry->assigned_to !== $user->id) abort(403); }
+    private function ensureCanRespond(User $user, ContactInquiry $inquiry): void { if ($inquiry->assigned_to !== $user->id) abort(403, 'Solo el administrador responsable puede responder esta consulta.'); }
 }

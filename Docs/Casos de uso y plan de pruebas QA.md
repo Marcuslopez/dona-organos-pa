@@ -50,16 +50,48 @@ Por cada caso QA debe conservar:
 - Fecha, navegador, sistema operativo y usuario ejecutor.
 - Identificador del defecto si el resultado es fallido.
 
+> **Alcance de este plan:** las pruebas aquí descritas se ejecutan desde las interfaces web del portal, administración y la bandeja web de smtp4dev. No incluye comandos de terminal, consultas SQL, Artisan, inspección directa de archivos, migraciones, respaldos ni configuración de infraestructura. Esas tareas corresponden al procedimiento técnico de Desarrollo e Infraestructura.
+
 ## 3. Preparación del ambiente
 
 ### Servicios requeridos
 
 - Aplicación Laravel disponible en el puerto configurado para el ambiente.
-- MySQL 8.4 disponible y con las migraciones ejecutadas.
-- Enlace público de almacenamiento creado mediante `php artisan storage:link`.
-- Vite compilado mediante `npm run build` o activo mediante `npm run dev`.
-- FFmpeg y ffprobe disponibles para validar y normalizar videos.
-- smtp4dev disponible para inspeccionar los mensajes de prueba.
+- El ambiente de QA está disponible, con sus datos de prueba, contenidos multimedia y cuentas previamente habilitados por Desarrollo e Infraestructura.
+- smtp4dev está disponible mediante su interfaz web para inspeccionar los mensajes de prueba.
+
+### Preparación de smtp4dev antes de casos de correo
+
+Esta preparación **no es un caso de prueba**. La realiza Desarrollo o Infraestructura antes de que QA ejecute los casos que validan correos.
+
+1. Desde el directorio del proyecto en el servidor, validar el estado del servicio:
+
+   ```bash
+   sudo docker compose -f compose.mail-dev.yaml ps
+   ```
+
+   Debe aparecer el servicio `smtp4dev` con estado `Up`.
+
+2. Si no aparece o está detenido, iniciarlo:
+
+   ```bash
+   sudo docker compose -f compose.mail-dev.yaml up -d
+   ```
+
+3. Confirmar nuevamente el estado con el comando del paso 1.
+
+4. Acceder a la bandeja de pruebas:
+
+   - En una estación que tenga acceso local al servidor: `http://127.0.0.1:8080`.
+   - Si el servidor solo expone smtp4dev en su propia interfaz local —configuración actual recomendada— Desarrollo o Infraestructura habilita un túnel SSH para el personal de QA:
+
+     ```bash
+     ssh -L 8080:127.0.0.1:8080 webdev@172.31.9.38
+     ```
+
+     Con el túnel abierto, QA navega en su equipo a `http://127.0.0.1:8080`.
+
+5. Verificar que la bandeja muestra el indicador de servidor SMTP activo antes de ejecutar un caso de envío. Si no abre o el indicador no está activo, el caso se registra como **Bloqueado** y se escala a Desarrollo o Infraestructura.
 
 ### Configuración funcional relevante
 
@@ -68,7 +100,7 @@ Por cada caso QA debe conservar:
 - Vigencia predeterminada de identidad validada: 10 minutos, ajustable por ambiente.
 - El formulario de un donante nuevo y el formulario de actualización ya iniciados no deben quedar bloqueados por el vencimiento de esa validación.
 - Las sesiones de donantes y administradores vencen por inactividad según la configuración del ambiente; una actividad válida renueva únicamente el temporizador del perfil correspondiente.
-- Para pruebas unitarias puede configurarse un tiempo reducido de inactividad. Las vistas protegidas de donantes y administración deben respetar ese vencimiento.
+- Para agilizar las pruebas, Desarrollo puede configurar previamente un tiempo reducido de inactividad. Las vistas protegidas de donantes y administración deben respetar ese vencimiento.
 - Videos: MP4 o MOV, máximo 25 MB y 90 segundos.
 - Las direcciones, credenciales y tiempos efectivos deben confirmarse contra el archivo `.env` del ambiente de QA.
 
@@ -121,6 +153,23 @@ Por cada caso QA debe conservar:
 | AUT-007 | P0 | Cerrar sesión | Activar “Cerrar sesión”. | La sesión se invalida y las rutas protegidas dejan de ser accesibles. |
 | AUT-008 | P0 | Expiración por inactividad administrativa | Mantener inactiva la sesión administrativa hasta superar el tiempo configurado. | Se informa que la sesión finalizó, se invalida el acceso y las rutas administrativas exigen autenticarse nuevamente. |
 | AUT-009 | P1 | Renovación por actividad administrativa | Realizar una navegación o acción válida antes de que venza el temporizador. | El contador administrativo se renueva y la sesión continúa disponible. |
+
+---
+
+## Flujo 2.2 — Administración de usuarios (usuario master)
+
+Este flujo se valida desde el navegador y está disponible únicamente para cuentas con rol **master**.
+
+| ID | Prioridad | Caso | Pasos principales | Resultado esperado |
+|---|---|---|---|---|
+| MAS-001 | P0 | Acceso inicial del master | Iniciar sesión con una cuenta master activa. | El usuario accede directamente a Administración de usuarios, sin pasar primero por el dashboard administrativo. |
+| MAS-002 | P0 | Protección del mantenimiento | Intentar abrir Administración de usuarios sin sesión o usando una cuenta administradora regular. | El acceso se rechaza o redirige según corresponda; no se muestran datos de cuentas administrativas. |
+| MAS-003 | P1 | Consulta y filtros | Buscar por nombre o correo; filtrar por rol y estado. | La grilla muestra únicamente las cuentas que cumplen los filtros seleccionados. |
+| MAS-004 | P0 | Crear usuario administrativo | Usar “Adicionar usuario”, completar nombre, correo, contraseña, rol y estado válidos, y guardar. | Se crea la cuenta, aparece en la grilla y puede iniciar sesión de acuerdo con su rol y estado. |
+| MAS-005 | P1 | Validaciones al crear | Intentar guardar con datos obligatorios vacíos, correo inválido o correo ya registrado. | No se crea la cuenta y se muestran mensajes claros junto a los datos que deben corregirse. |
+| MAS-006 | P0 | Modificar usuario | Abrir “Ver”, cambiar los datos permitidos —por ejemplo nombre, rol, estado o contraseña— y guardar. | Solo los cambios realizados se conservan y se reflejan en la grilla y en el siguiente acceso del usuario. |
+| MAS-007 | P1 | Estado de cuenta | Marcar una cuenta administrativa como inactiva e intentar iniciar sesión con ella; luego reactivarla. | La cuenta inactiva no puede acceder; al reactivarla recupera el acceso con sus credenciales vigentes. |
+| MAS-008 | P1 | Navegación y cierre de sesión | Usar los botones inferiores “Dashboard administrativo” e “Inicio”; utilizar “Cerrar sesión” en la cabecera. | Cada botón lleva al destino correcto y el cierre invalida la sesión master. |
 
 ---
 
@@ -188,7 +237,7 @@ Por cada caso QA debe conservar:
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
 | REG-019 | P0 | Pantalla de éxito | Completar un registro válido. | Se muestra “Tu voluntad fue registrada”, el carné y los botones aprobados. |
-| REG-020 | P0 | Persistencia | Consultar la base y el dashboard después del alta. | Existe un solo registro de donante y sus relaciones; no se duplica la cédula. |
+| REG-020 | P0 | Registro visible | Buscar al donante en el dashboard después del alta. | Aparece una sola vez con los datos, estado y contacto registrados; no se duplica la cédula. |
 | REG-021 | P1 | Folio del carné | Crear registros consecutivos. | Se generan identificadores únicos con formato `CD-0000001`. |
 | REG-022 | P1 | Correo de alta | Revisar smtp4dev después del registro. | Llega un correo al destinatario capturado con el carné PDF adjunto. |
 
@@ -214,7 +263,7 @@ Por cada caso QA debe conservar:
 | DON-007 | P1 | Cambio solo personal | Modificar únicamente un dato personal. | Se conserva el carné y consentimiento vigentes cuando el cambio no altera la voluntad. |
 | DON-008 | P1 | Actualización prolongada | Iniciar la actualización y guardar después de vencer el TTL. | El formulario iniciado permite guardar las modificaciones válidas. |
 | DON-009 | P1 | Correo de actualización | Completar un cambio que genera carné nuevo. | smtp4dev recibe el mensaje con el carné actualizado. |
-| DON-010 | P0 | Unicidad después de actualizar | Revisar dashboard y base de datos. | La cédula aparece una sola vez; los carnés históricos no duplican al donante en la grilla. |
+| DON-010 | P0 | Unicidad después de actualizar | Buscar la cédula en el dashboard tras actualizar los datos. | La cédula aparece una sola vez; los carnés históricos no duplican al donante en la grilla. |
 
 ## Flujo 5.3 — Baja voluntaria
 
@@ -237,7 +286,7 @@ Por cada caso QA debe conservar:
 | REA-001 | P0 | Resumen de baja | Validar un donante retirado. | Se muestra saludo, carné, fecha y hora de baja en formato de 12 horas y los datos organizados visualmente. |
 | REA-002 | P0 | Abrir reactivación | Activar “Registrar nuevamente mi voluntad”. | Se abre el formulario precargado para revisar datos y aceptar un nuevo consentimiento. |
 | REA-003 | P0 | Reactivar | Completar las confirmaciones y guardar. | El mismo donante vuelve a Activo; se crean historial, consentimiento y carné nuevos. |
-| REA-004 | P0 | No duplicar persona | Consultar base y dashboard. | Continúa existiendo una sola fila en `donors` para la cédula. |
+| REA-004 | P0 | No duplicar persona | Buscar la cédula en el dashboard tras reactivar. | Continúa apareciendo una sola fila para la cédula. |
 | REA-005 | P1 | Folio nuevo | Comparar el carné revocado con el reactivado. | El carné nuevo tiene identificador distinto y el anterior permanece revocado. |
 | REA-006 | P1 | Correo de reactivación | Revisar smtp4dev. | Se recibe el carné nuevo como adjunto. |
 
@@ -297,7 +346,7 @@ Por cada caso QA debe conservar:
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
 | CSV-001 | P1 | Exportar resultados | Aplicar filtros y descargar CSV. | El archivo incluye todos los registros coincidentes, no solo la página visible. |
-| CSV-002 | P1 | Fidelidad | Comparar conteo y campos con el dashboard/base. | El contenido coincide con los filtros y no duplica donantes. |
+| CSV-002 | P1 | Fidelidad | Comparar conteo y campos con el dashboard. | El contenido coincide con los filtros y no duplica donantes. |
 | CSV-003 | P2 | Caracteres especiales | Exportar nombres con tildes y ñ. | El archivo conserva los caracteres y abre correctamente en una hoja de cálculo. |
 | CSV-004 | P2 | Selección de carpeta | Descargar con el navegador configurado para preguntar ubicación. | El diálogo depende de la configuración del navegador; el sistema entrega nombre y tipo correctos. |
 
@@ -321,13 +370,13 @@ Por cada caso QA debe conservar:
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
 | MET-001 | P0 | Acceso protegido | Abrir métricas sin sesión y luego con administrador activo. | Sin sesión se redirige al login; con sesión se muestran las gráficas. |
-| MET-002 | P0 | Fuente de datos | Comparar las gráficas con consultas sobre `donors`. | Los valores representan todos los donantes normales y demostrativos existentes. |
+| MET-002 | P0 | Fuente de datos | Comparar las gráficas con los listados y filtros visibles en el dashboard. | Los valores representan los donantes normales y demostrativos disponibles en el ambiente. |
 | MET-003 | P0 | Crecimiento acumulado | Comparar los últimos 12 meses. | Solo acumula donantes cuyo estado actual es Activo, según la regla aprobada. |
 | MET-004 | P0 | Altas y bajas mensuales | Comparar registros por mes y estado actual. | Las altas y bajas corresponden a fecha de registro y `donors.status`, sin valores inventados. |
 | MET-005 | P1 | Meses sin actividad | Validar meses con valor cero. | Se muestran explícitamente con cero, sin omitir ni desplazar el mes. |
 | MET-006 | P1 | Distribución por estado | Contar activos y bajas. | La gráfica coincide con el total actual de cada estado. |
 | MET-007 | P1 | Distribución por edad | Recalcular edades con la fecha actual. | Los donantes quedan en el rango correcto y el total coincide con la población aplicable. |
-| MET-008 | P1 | Donantes por provincia | Agrupar la base por provincia. | Cada barra/valor coincide con la consulta y la suma total es correcta. |
+| MET-008 | P1 | Donantes por provincia | Filtrar el dashboard por cada provincia y contrastar el conteo con la gráfica. | Cada barra/valor coincide con los registros visibles y la suma total es correcta. |
 | MET-009 | P2 | Orden visual | Revisar la página completa. | El orden es: crecimiento acumulado; altas/bajas de 12 meses; altas/bajas; edad y provincia. |
 | MET-010 | P1 | Actualización | Crear un donante de prueba y recargar métricas. | El registro se incluye inmediatamente en las gráficas correspondientes. |
 
@@ -373,7 +422,7 @@ Por cada caso QA debe conservar:
 
 # Módulo 11. CMS multimedia
 
-La metadata se administra mediante la relación de contenido con sus medios. Los archivos se almacenan en el disco público, no como BLOB dentro de MySQL.
+La metadata de los medios se administra junto con el contenido. Los archivos se publican a través del portal y no deben requerir acciones técnicas por parte de QA.
 
 ## Flujo 11.1 — Imágenes de aspectos legales
 
@@ -383,9 +432,9 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 | IMG-002 | P1 | Recorte 16:9 | Ajustar el marco y confirmar. | Se prepara un JPG de 1600×900, 16:9 y máximo 2 MB. |
 | IMG-003 | P1 | Desplazamiento modal | Seleccionar una imagen grande y recorrer el formulario. | El modal tiene barra de desplazamiento y permite acceder a todos los controles. |
 | IMG-004 | P1 | Descripción accesible | Intentar guardar una imagen sin descripción. | Se solicita una descripción accesible antes de guardar. |
-| IMG-005 | P1 | Metadatos | Guardar y consultar el registro. | Se conservan nombre original, MIME, tamaño, dimensiones, ruta y descripción. |
-| IMG-006 | P1 | Reemplazar imagen | Editar el contenido y cargar otra imagen. | La nueva queda asociada y la anterior se elimina físicamente. |
-| IMG-007 | P1 | Retirar imagen | Retirar el medio y guardar. | Se elimina la relación y el archivo físico, manteniendo el texto. |
+| IMG-005 | P1 | Imagen publicada | Guardar un contenido con imagen y abrir el portal. | La imagen y su descripción accesible se muestran correctamente en el contenido publicado. |
+| IMG-006 | P1 | Reemplazar imagen | Editar el contenido y cargar otra imagen. | La nueva imagen se muestra en el portal en lugar de la anterior. |
+| IMG-007 | P1 | Retirar imagen | Retirar el medio y guardar. | El texto se mantiene publicado y la imagen deja de aparecer. |
 
 ## Flujo 11.2 — Videos de historias personales
 
@@ -397,22 +446,14 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 | VID-004 | P1 | Duración excesiva | Subir un video de más de 90 segundos. | Se rechaza; se muestra solo el resumen de errores y no se abre automáticamente el formulario de edición. |
 | VID-005 | P1 | Tamaño excesivo | Subir un video de más de 25 MB. | Se rechaza de forma controlada antes de procesarlo; no aparece una excepción técnica. |
 | VID-006 | P1 | Formato no permitido | Subir AVI, MKV u otro formato no admitido. | Se muestra la lista de formatos permitidos y no se guarda. |
-| VID-007 | P1 | Archivo corrupto | Subir un MP4/MOV ilegible. | ffprobe detecta el problema; no se crea metadata ni archivo publicado. |
+| VID-007 | P1 | Archivo corrupto | Subir un MP4/MOV ilegible. | Se muestra una advertencia clara y el video no se publica. |
 | VID-008 | P0 | Reproducción pública | Publicar la historia y reproducirla. | El control muestra duración real y reproduce audio/video; no queda en 0:00. |
 | VID-009 | P1 | Solicitudes parciales | Adelantar y retroceder el reproductor. | El servidor entrega rangos correctamente y el video continúa sin descargarlo completo nuevamente. |
-| VID-010 | P1 | Sustituir video | Cargar un video nuevo sobre una historia existente. | Se publica el nuevo y se elimina físicamente el anterior. |
-| VID-011 | P1 | Retirar video | Quitar el video y guardar la historia. | El texto permanece, la metadata se desactiva/elimina según diseño y el archivo físico desaparece. |
-| VID-012 | P1 | Eliminar historia | Eliminar una historia con video. | La historia deja de mostrarse y su archivo no queda huérfano en `storage/app/public/.../stories`. |
+| VID-010 | P1 | Sustituir video | Cargar un video nuevo sobre una historia existente. | Se publica el nuevo video en lugar del anterior. |
+| VID-011 | P1 | Retirar video | Quitar el video y guardar la historia. | El texto permanece y el reproductor deja de aparecer. |
+| VID-012 | P1 | Eliminar historia | Eliminar una historia con video. | La historia deja de mostrarse en el portal. |
 | VID-013 | P1 | Historia sin video | Crear una historia solo con título y texto. | Se guarda y se presenta correctamente sin reproductor. |
 | VID-014 | P0 | Texto obligatorio | Intentar crear una historia con video, pero sin título o texto. | Se rechaza porque el video no sustituye los campos obligatorios. |
-
-## Flujo 11.3 — Integridad de archivos
-
-| ID | Prioridad | Caso | Pasos principales | Resultado esperado |
-|---|---|---|---|---|
-| MED-001 | P0 | Sin BLOB en base | Consultar la tabla de metadata. | La base contiene rutas y metadata, no el binario del archivo. |
-| MED-002 | P0 | Sin archivo huérfano | Reemplazar, retirar y eliminar medios; comparar carpeta y base. | No quedan archivos sin una relación válida ni relaciones apuntando a archivos inexistentes. |
-| MED-003 | P1 | Falla durante procesamiento | Interrumpir o forzar error de FFmpeg. | No se publica un registro parcial; temporales se limpian y el medio anterior permanece si era una actualización. |
 
 ---
 
@@ -438,50 +479,34 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 |---|---|---|---|---|
 | CON-010 | P0 | Acceso protegido | Abrir la gestión de consultas sin sesión o con sesión vencida. | Se redirige al login; no se expone el contenido de las consultas. |
 | CON-011 | P1 | Listado y filtros | Abrir el mantenimiento y filtrar por texto y estados Nueva, En proceso, Respondida y Cerrada. | La grilla muestra solo las consultas coincidentes y conserva los filtros aplicados. |
-| CON-012 | P0 | Tomar una consulta | Un administrador toma una consulta Nueva. | La consulta pasa a En proceso, se registra el responsable y el historial conserva la transición. |
+| CON-012 | P0 | Tomar una consulta | Un administrador toma una consulta Nueva para atenderla personalmente. | La consulta pasa a En proceso, el administrador queda como responsable y el historial conserva la transición. |
 | CON-013 | P0 | Evitar atención simultánea | Dos administradores intentan tomar la misma consulta. | Solo uno queda asignado; el otro recibe un mensaje controlado y no puede responderla. |
-| CON-014 | P0 | Asignación por usuario master | El usuario master asigna una consulta a un administrador activo. | Se actualiza el responsable, se registra el historial y el administrador recibe una notificación por correo. |
+| CON-014 | P0 | Asignación y reasignación por usuario master | El master asigna una consulta a un administrador activo; repetir reasignándola a otro administrador. | Se actualiza el responsable, se registra cada cambio en el historial y el responsable asignado recibe una notificación por correo. |
 | CON-015 | P0 | Protección del enlace de asignación | Abrir el enlace de una notificación con sesión vencida; repetir con sesión activa del administrador asignado. | Sin sesión se exige login; con sesión activa y autorización válida se abre la consulta asignada. El correo no muestra el detalle sensible. |
 | CON-016 | P0 | Responder consulta | El responsable asignado redacta y envía una respuesta. | La respuesta queda registrada, se envía al correo del remitente y el estado pasa a Respondida. |
 | CON-017 | P1 | Cerrar consulta | Intentar cerrar una consulta nueva/en proceso y luego una respondida. | Solo una consulta Respondida puede pasar a Cerrada; después no admite nuevas respuestas. |
 | CON-018 | P1 | Trazabilidad | Revisar historial de una consulta creada, asignada, respondida y cerrada. | Se conservan acciones, usuario responsable, estado y fecha/hora de cada transición. |
-| CON-019 | P0 | Permisos por responsable | Intentar que un administrador no asignado consulte o responda una consulta de otro. | El acceso o acción se rechaza; el usuario master mantiene capacidad de supervisión y asignación. |
+| CON-019 | P0 | Respuesta limitada al responsable | Con una consulta asignada a Administrador2, abrirla como master y como otro administrador. | El master puede supervisar y reasignar, pero el área de respuesta y su envío permanecen deshabilitados; los demás administradores tampoco pueden responder. |
+| CON-020 | P0 | Autoadjudicación del master | El master abre una consulta nueva o asignada a otro usuario, se la asigna a sí mismo y redacta una respuesta. | Tras quedar asignado al master, se habilita la respuesta; al enviarla se registra la acción y se notifica al remitente. |
+| CON-021 | P1 | Consulta cerrada | Abrir una consulta Cerrada como master, responsable y otro administrador. | La información e historial pueden revisarse conforme a los permisos, pero no se permite reasignarla ni enviar respuestas adicionales. |
 
 ---
 
-# Módulo 13. Datos demostrativos
-
-## Flujo 13.1 — Sembrado y limpieza segura
+# Módulo 13. Seguridad y comportamiento transversal
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
-| DEM-001 | P0 | Protección predeterminada | Intentar sembrar demostrativos sin habilitación explícita. | El comando se detiene y no altera datos. |
-| DEM-002 | P1 | Crear semillas | Habilitar el mecanismo documentado y ejecutar el seeder. | Se crean registros marcados `is_demo`, con las fechas/estados planificados. |
-| DEM-003 | P1 | Estado | Ejecutar `php artisan demo:status`. | Se informa claramente cuántos registros demostrativos existen. |
-| DEM-004 | P0 | Purgar | Ejecutar `php artisan demo:purge` con las confirmaciones requeridas. | Se eliminan exclusivamente donantes demostrativos y sus dependencias. |
-| DEM-005 | P0 | Proteger datos normales | Comparar antes y después de la purga. | Ningún donante real/de prueba manual es modificado o eliminado. |
-| DEM-006 | P1 | Métricas | Sembrar y abrir métricas; luego purgar y recargar. | Las métricas incorporan y posteriormente dejan de incorporar esos registros de forma fiel. |
-
----
-
-# Módulo 14. Seguridad y comportamiento transversal
-
-| ID | Prioridad | Caso | Pasos principales | Resultado esperado |
-|---|---|---|---|---|
-| SEG-001 | P0 | CSRF | Enviar un POST/PUT/DELETE sin token válido. | Laravel rechaza la solicitud. |
 | SEG-002 | P0 | Autorización | Intentar rutas administrativas como invitado o usuario inactivo. | No se exponen datos ni se ejecutan acciones. |
 | SEG-003 | P0 | Inyección SQL | Introducir caracteres SQL en búsquedas y formularios. | Se tratan como datos; no modifican consultas ni estructura. |
 | SEG-004 | P0 | XSS | Introducir scripts en nombres y contenidos. | Se validan/sanean y nunca se ejecutan en el portal o administración. |
-| SEG-005 | P0 | Mass assignment | Enviar campos no presentes en el formulario, como estado o `is_demo`. | El servidor ignora/rechaza atributos no autorizados. |
-| SEG-006 | P1 | Errores en producción | Provocar validación y URL no encontrada con `APP_DEBUG=false`. | No se muestran trazas, rutas locales, credenciales ni consultas. |
 | SEG-007 | P1 | Concurrencia de folios | Crear dos donantes casi simultáneamente. | Ambos reciben folios únicos y válidos. |
 | SEG-008 | P1 | Doble envío | Hacer doble clic o reenviar el formulario de alta. | No se crean donantes, consentimientos o carnés duplicados. |
 | SEG-009 | P1 | Auditoría | Crear, modificar y dar de baja registros. | Se conservan fechas y usuario responsable donde el modelo lo contempla. |
-| SEG-010 | P1 | Datos sensibles | Revisar logs, URLs, QR y mensajes públicos. | No exponen código posterior, respuestas médicas, cédula completa u otros datos fuera del contexto autorizado. |
+| SEG-010 | P1 | Datos sensibles | Revisar URLs, QR, pantallas y mensajes públicos. | No exponen código posterior, respuestas médicas, cédula completa u otros datos fuera del contexto autorizado. |
 
 ---
 
-# Módulo 15. Compatibilidad y desempeño básico
+# Módulo 14. Compatibilidad y desempeño básico
 
 | ID | Prioridad | Caso | Pasos principales | Resultado esperado |
 |---|---|---|---|---|
@@ -489,12 +514,12 @@ La metadata se administra mediante la relación de contenido con sus medios. Los
 | CMP-002 | P2 | Sistemas | Probar macOS, Windows, iOS y Android. | Formularios, modales, calendarios, CAPTCHA y multimedia son utilizables. |
 | CMP-003 | P1 | Equipo de 8 GB | Ejecutar navegación y reproducción en un equipo de recursos modestos. | La cuenta regresiva y la UI no producen consumo perceptible anormal. |
 | CMP-004 | P1 | Carga del inicio | Medir con contenido e imágenes optimizadas. | No se descargan videos completos hasta que el navegador los necesita; la página permanece utilizable durante la carga. |
-| CMP-005 | P1 | Carga de video | Subir un video cercano a 25 MB. | Se muestra progreso/espera comprensible, no vence la solicitud y el servidor permanece estable. |
+| CMP-005 | P1 | Carga de video | Subir un video cercano a 25 MB. | Se muestra una espera comprensible y la interfaz recupera el control con éxito o un mensaje claro. |
 | CMP-006 | P2 | Impresión | Probar Safari y Chrome con papel Carta y escala 100 %. | Expediente y carné mantienen legibilidad y no producen páginas en blanco. |
 
 ---
 
-# 16. Flujos integrales de aceptación
+# 15. Flujos integrales de aceptación
 
 Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 
@@ -510,7 +535,7 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 8. Escanear el QR.
 9. Confirmar que el donante aparece una vez en el dashboard y en las métricas.
 
-**Resultado:** alta consistente en portal, base de datos, administración, correo, carné, QR y métricas.
+**Resultado:** alta consistente en portal, administración, correo, carné, QR y métricas.
 
 ## E2E-02 — Actualización
 
@@ -543,9 +568,9 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 4. Crear una historia con MOV vertical válido.
 5. Revisar reproducción en el portal.
 6. Sustituir y luego retirar el video.
-7. Confirmar que no queden archivos huérfanos.
+7. Confirmar que el portal solo muestre el medio vigente.
 
-**Resultado:** contenido y multimedia coherentes entre CMS, almacenamiento y portal público.
+**Resultado:** contenido y multimedia coherentes entre CMS y portal público.
 
 ## E2E-05 — Administración y métricas
 
@@ -553,7 +578,7 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 2. Filtrar activos, bajas y todos.
 3. Combinar filtros y exportar CSV.
 4. Abrir el detalle de un donante e imprimirlo.
-5. Comparar los totales de métricas con consultas a la base.
+5. Comparar los totales de métricas con los conteos obtenidos mediante los filtros visibles del dashboard.
 6. Cerrar sesión y comprobar que el acceso queda protegido.
 
 **Resultado:** consultas, exportación, impresión, métricas y permisos reflejan el mismo conjunto de datos.
@@ -563,8 +588,8 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 1. Abrir el portal y acceder a “Contáctenos”.
 2. Enviar una consulta con aceptación de condiciones.
 3. Verificar el acuse al remitente y la notificación interna en smtp4dev.
-4. Iniciar sesión como usuario master y asignar la consulta.
-5. Abrirla como administrador asignado, tomarla y responderla.
+4. Iniciar sesión como usuario master y asignar la consulta a un administrador activo.
+5. Verificar que el master no pueda responder mientras la consulta pertenezca a otro usuario; iniciar sesión como el administrador asignado y responderla.
 6. Verificar el correo de respuesta, el cambio de estado y el historial.
 7. Cerrar la consulta.
 
@@ -572,7 +597,7 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 
 ---
 
-# 17. Plantilla de registro de ejecución
+# 16. Plantilla de registro de ejecución
 
 | Campo | Valor |
 |---|---|
@@ -589,7 +614,7 @@ Estos recorridos deben ejecutarse completos al final de cada ciclo de QA.
 | Defecto relacionado | |
 | Observaciones | |
 
-## 18. Criterio recomendado de salida
+## 17. Criterio recomendado de salida
 
 La versión puede pasar a la siguiente fase cuando:
 
@@ -597,6 +622,6 @@ La versión puede pasar a la siguiente fase cuando:
 - No existan defectos abiertos que comprometan datos personales, consentimiento, estado o unicidad del donante.
 - Los casos P1 principales estén aprobados o cuenten con una excepción formal aceptada.
 - Los seis recorridos integrales estén aprobados.
-- Se haya verificado respaldo, restauración, migraciones y configuración del ambiente objetivo.
-- Los valores de métricas, CSV, dashboard y base de datos sean consistentes.
+- El ambiente de QA haya sido declarado disponible por Desarrollo e Infraestructura.
+- Los valores de métricas, CSV y dashboard sean consistentes en las interfaces visibles.
 - Las altas, bajas, reactivaciones y modificaciones posean trazabilidad verificable.

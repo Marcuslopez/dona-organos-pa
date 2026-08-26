@@ -46,9 +46,7 @@ class DonorRegistrationTest extends TestCase
         ]);
         $donorId = DB::table('donors')->where('document_number', '8-123-1234')->value('id');
         $this->assertDatabaseCount('donor_contacts', 1);
-        $this->assertDatabaseHas('donation_preferences', ['donor_id' => $donorId, 'research_authorized' => true]);
-        $this->assertDatabaseCount('donor_health_answers', 4);
-        $this->assertDatabaseHas('consents', ['donor_id' => $donorId, 'revoked_at' => null]);
+        $this->assertDatabaseHas('consents', ['donor_id' => $donorId, 'consent_sequence' => 1, 'accepted' => true, 'version' => '2.0', 'revoked_at' => null]);
         $this->assertDatabaseHas('donor_cards', ['donor_id' => $donorId, 'folio' => 'CD-0000001', 'revoked_at' => null]);
         $this->assertNull(session('identity_verification'));
     }
@@ -172,7 +170,7 @@ class DonorRegistrationTest extends TestCase
             ->assertDontSee('return confirm(', false);
     }
 
-    public function test_active_donor_can_update_contacts_and_scope_with_history_and_new_card(): void
+    public function test_active_donor_can_update_contacts_with_history_and_new_card(): void
     {
         Mail::fake();
         $payload = $this->validPayload();
@@ -187,18 +185,14 @@ class DonorRegistrationTest extends TestCase
             ->assertSee('Confirmar actualización');
 
         $payload['contacts'][0]['phone'] = '6222-3333';
-        $payload['donation_scope_id'] = DB::table('donation_scopes')
-            ->where('id', '!=', $payload['donation_scope_id'])->value('id');
-
         $this->withSession($this->verifiedSession('active'))
             ->post(route('registration.update.store'), $payload)
             ->assertRedirect(route('registration.completed'));
 
         $this->assertDatabaseHas('donor_contacts', ['donor_id' => $donorId, 'phone' => '6222-3333']);
-        $this->assertDatabaseHas('donation_preferences', ['donor_id' => $donorId, 'donation_scope_id' => $payload['donation_scope_id']]);
         $this->assertDatabaseCount('donor_change_history', 1);
         $this->assertSame(2, DB::table('donor_cards')->where('donor_id', $donorId)->count());
-        $this->assertSame(2, DB::table('consents')->where('donor_id', $donorId)->count());
+        $this->assertSame(1, DB::table('consents')->where('donor_id', $donorId)->count());
         $this->assertNotNull(DB::table('donor_cards')->where('folio', 'CD-0000001')->value('revoked_at'));
         $this->assertDatabaseHas('donor_cards', ['donor_id' => $donorId, 'folio' => 'CD-0000002', 'revoked_at' => null]);
         Mail::assertSent(DonorCardMail::class, 2);
@@ -308,7 +302,6 @@ class DonorRegistrationTest extends TestCase
         $payload = $this->validPayload();
         $payload['first_name'] = 'María';
         $payload['first_last_name'] = 'Núñez';
-        $payload['signed_name'] = 'María Núñez';
         $payload['phone'] = '6000-1234';
         $payload['contacts'][0]['first_name'] = 'José';
         $payload['contacts'][0]['first_last_name'] = 'Pérez';
@@ -337,7 +330,6 @@ class DonorRegistrationTest extends TestCase
         $payload['first_name'] = '  Donante  ';
         $payload['middle_name'] = '  De  ';
         $payload['first_last_name'] = '  Prueba  ';
-        $payload['signed_name'] = '  Donante De Prueba  ';
         $payload['contacts'][0]['first_name'] = '  Contacto  ';
         $payload['contacts'][0]['first_last_name'] = '  Principal  ';
 
@@ -347,7 +339,7 @@ class DonorRegistrationTest extends TestCase
 
         $this->assertDatabaseHas('donors', ['full_name' => 'Donante De Prueba']);
         $this->assertDatabaseHas('donor_contacts', ['full_name' => 'Contacto Principal']);
-        $this->assertDatabaseHas('consents', ['signed_name' => 'Donante De Prueba']);
+        $this->assertDatabaseHas('consents', ['donor_id' => DB::table('donors')->where('document_number', '8-123-1234')->value('id'), 'accepted' => true]);
     }
 
     public function test_donor_card_uses_full_name_and_contact_names_use_optional_initials(): void
@@ -357,7 +349,6 @@ class DonorRegistrationTest extends TestCase
         $payload['middle_name'] = 'Rodolfo';
         $payload['first_last_name'] = 'Ramos';
         $payload['second_last_name'] = 'Lopez';
-        $payload['signed_name'] = 'Marcos Rodolfo Ramos Lopez';
         $payload['contacts'][0]['first_name'] = 'Maria';
         $payload['contacts'][0]['middle_name'] = 'Isabel';
         $payload['contacts'][0]['first_last_name'] = 'Chen';
@@ -419,17 +410,7 @@ class DonorRegistrationTest extends TestCase
                 'email' => 'contacto@example.com',
                 'is_informed' => '1',
             ]],
-            'donation_scope_id' => DB::table('donation_scopes')->value('id'),
-            'research_authorized' => '1',
-            'health_answers' => DB::table('health_questions')->pluck('id')->mapWithKeys(
-                fn ($questionId) => [$questionId => DB::table('health_answer_options')->value('id')]
-            )->all(),
-            'signed_name' => 'Donante De Prueba',
-            'voluntary_accepted' => '1',
-            'electronically_accepted' => '1',
-            'sensitive_data_authorized' => '1',
-            'institutional_query_authorized' => '1',
-            'cornea_information_acknowledged' => '1',
+            'consent_accepted' => '1',
         ];
     }
 

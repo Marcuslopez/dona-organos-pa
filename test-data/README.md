@@ -10,7 +10,7 @@ Desde la raíz del proyecto:
 bash test-data/validar-metricas.sh
 ```
 
-El script usa la configuración activa de Laravel (`.env`), no solicita ni guarda contraseñas y no modifica registros. Genera un reporte de texto dentro de `test-data/results/`; esos reportes no se versionan en Git.
+El script usa la configuración activa de Laravel (`.env`), no solicita ni guarda contraseñas y no modifica registros. La salida es temporal: se muestra en la terminal y no crea archivos de reporte.
 
 ## Información mostrada
 

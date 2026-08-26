@@ -130,15 +130,6 @@ class AdminMetricsService
             ->groupBy('provinces.id', 'provinces.name')->orderByDesc('total')->get();
     }
 
-    public function donationScopeDistribution(array $filters = []): Collection
-    {
-        return $this->donors($filters)
-            ->join('donation_preferences', 'donation_preferences.donor_id', '=', 'donors.id')
-            ->join('donation_scopes', 'donation_scopes.id', '=', 'donation_preferences.donation_scope_id')
-            ->selectRaw('donation_scopes.name as label, COUNT(*) as total')
-            ->groupBy('donation_scopes.id', 'donation_scopes.name')->orderByDesc('total')->get();
-    }
-
     public function statusEventsByMonth(array $filters = []): Collection
     {
         $query = DB::table('donor_status_history')

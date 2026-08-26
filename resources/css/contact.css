@@ -6,3 +6,22 @@
 .contact-admin-main { max-width: 1280px; }.contact-admin-filters { align-items: end; display: grid; gap: 1rem; grid-template-columns: minmax(240px, 1.8fr) minmax(180px, 1fr) auto; }.contact-admin-filters label { display: block; font-size: .78rem; font-weight: 800; margin-bottom: .35rem; }.admin-filter-actions { display: flex; gap: .65rem; }.contact-status { border-radius: 999px; display: inline-block; font-size: .78rem; font-weight: 800; padding: .42rem .75rem; white-space: nowrap; }.contact-status-nueva { background: #e8efff; color: #1e40af; }.contact-status-en_proceso { background: #fff5dd; color: #9a6100; }.contact-status-respondida { background: #dcf8ea; color: #15734b; }.contact-status-cerrada { background: #e9edf3; color: #475569; }
 .contact-detail-grid { display: grid; gap: 1rem; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); margin-bottom: 1rem; }.admin-detail-card { background: #fff; border: 1px solid #dce6f1; border-radius: 1rem; margin-bottom: 1rem; padding: 1.4rem; }.admin-detail-card h2 { border-bottom: 1px solid #dce6f1; color: var(--brand-navy); font-size: 1.15rem; font-weight: 800; margin: 0 0 1rem; padding-bottom: .75rem; }.admin-detail-card dl { display: grid; gap: .8rem; margin: 0; }.admin-detail-card dl div { display: flex; gap: 1rem; justify-content: space-between; }.admin-detail-card dt { color: #718096; }.admin-detail-card dd { color: #24344b; font-weight: 750; margin: 0; text-align: right; }.contact-message, .contact-reply p { color: #24344b; line-height: 1.65; margin: 0; white-space: pre-wrap; }.contact-inline-form { align-items: center; display: flex; flex-wrap: wrap; gap: .75rem; }.contact-inline-form .form-select { flex: 1 1 340px; }.contact-reply + .contact-reply { border-top: 1px solid #dce6f1; margin-top: 1rem; padding-top: 1rem; }.contact-reply small { color: #718096; display: block; margin-bottom: .75rem; }.contact-history summary { color: var(--brand-navy); cursor: pointer; font-weight: 800; }.contact-history ul { margin: 1rem 0 0; padding-left: 1.2rem; }
 @media (max-width: 767.98px) { .contact-admin-filters, .contact-detail-grid { grid-template-columns: 1fr; }.admin-filter-actions { justify-content: flex-end; } }
+
+/* Patrón visual compartido por el dashboard y el mantenimiento de consultas. */
+.contact-admin-intro-panel, .contact-inquiry-heading { align-items: center; background: #fff; border: 1px solid #dce6f1; border-radius: 1.15rem; display: flex; gap: 1rem; justify-content: space-between; margin-bottom: 1rem; padding: clamp(1.35rem, 3vw, 2rem); }
+.contact-admin-intro-panel h1, .contact-inquiry-heading h1 { color: var(--brand-navy); font-size: clamp(1.7rem, 3vw, 2.35rem); font-weight: 850; margin: 0; }
+.contact-admin-intro-panel p:last-child, .contact-inquiry-heading p:last-child { color: #5d6f88; margin: .4rem 0 0; }
+.contact-admin-eyebrow { color: #315bc6; font-size: .74rem; font-weight: 850; letter-spacing: .11em; margin: 0 0 .45rem; text-transform: uppercase; }
+.contact-inquiry-summary { background: linear-gradient(105deg, #10134d, var(--brand-navy)); border-radius: .9rem; color: #fff; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 1rem; overflow: hidden; }
+.contact-inquiry-summary div { border-right: 1px solid rgba(255, 255, 255, .22); min-height: 78px; padding: 1rem 1.25rem; }
+.contact-inquiry-summary div:last-child { border-right: 0; }
+.contact-inquiry-summary span, .contact-inquiry-summary strong { display: block; }
+.contact-inquiry-summary span { color: #c6d5f5; font-size: .7rem; font-weight: 800; letter-spacing: .04em; margin-bottom: .32rem; }
+.contact-inquiry-summary strong { font-size: .95rem; }
+
+@media (max-width: 767.98px) {
+    .contact-admin-intro-panel, .contact-inquiry-heading { align-items: flex-start; flex-direction: column; }
+    .contact-inquiry-summary { grid-template-columns: 1fr; }
+    .contact-inquiry-summary div { border-bottom: 1px solid rgba(255, 255, 255, .22); border-right: 0; min-height: auto; }
+    .contact-inquiry-summary div:last-child { border-bottom: 0; }
+}

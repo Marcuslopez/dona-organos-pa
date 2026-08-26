@@ -177,7 +177,11 @@ class DonorRegistrationController extends Controller
 
             $now = now();
             DB::table('donors')->where('id', $donor->id)->update(['status' => 'withdrawn', 'withdrawn_at' => $now, 'updated_at' => $now]);
-            DB::table('consents')->where('donor_id', $donor->id)->whereNull('revoked_at')->update(['revoked_at' => $now, 'updated_at' => $now]);
+            DB::table('consents')->where('donor_id', $donor->id)->whereNull('revoked_at')->update([
+                'revoked_at' => $now,
+                'revocation_reason' => 'Baja voluntaria solicitada por el donante.',
+                'updated_at' => $now,
+            ]);
             DB::table('donor_cards')->where('donor_id', $donor->id)->whereNull('revoked_at')->update(['revoked_at' => $now, 'updated_at' => $now]);
             DB::table('donor_status_history')->insert([
                 'donor_id' => $donor->id,
@@ -214,9 +218,6 @@ class DonorRegistrationController extends Controller
         return [
             'genders' => $this->activeCatalog('genders'),
             'relationships' => $this->activeCatalog('relationships'),
-            'donationScopes' => $this->activeCatalog('donation_scopes'),
-            'answerOptions' => $this->activeCatalog('health_answer_options'),
-            'healthQuestions' => DB::table('health_questions')->where('is_active', true)->orderBy('sort_order')->get(),
             'provinces' => DB::table('provinces')->where('is_active', true)->orderBy('name')->get(),
             'districts' => DB::table('districts')->where('is_active', true)->orderBy('name')->get(),
             'corregimientos' => DB::table('corregimientos')->where('is_active', true)->orderBy('name')->get(),
@@ -226,14 +227,8 @@ class DonorRegistrationController extends Controller
     private function donorDefaults(object $donor): array
     {
         $contacts = DB::table('donor_contacts')->where('donor_id', $donor->id)->orderByDesc('is_primary')->orderBy('id')->get();
-        $preference = DB::table('donation_preferences')->where('donor_id', $donor->id)->first();
-        $healthAnswers = DB::table('donor_health_answers')->where('donor_id', $donor->id)
-            ->pluck('health_answer_option_id', 'health_question_id')->all();
         $defaults = (array) $donor;
         $defaults['contacts'] = $contacts->map(fn (object $contact): array => (array) $contact)->all();
-        $defaults['donation_scope_id'] = $preference?->donation_scope_id;
-        $defaults['health_answers'] = $healthAnswers;
-        $defaults['signed_name'] = $donor->full_name;
 
         return $defaults;
     }

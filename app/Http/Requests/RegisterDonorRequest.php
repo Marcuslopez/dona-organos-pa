@@ -39,16 +39,7 @@ class RegisterDonorRequest extends FormRequest
             'contacts.*.phone' => ['required', 'regex:/^(?:\d{3}-\d{4}|\d{4}-\d{4})$/'],
             'contacts.*.email' => ['nullable', 'email:rfc', 'max:180'],
             'contacts.*.is_informed' => ['nullable', 'boolean'],
-            'donation_scope_id' => ['required', Rule::exists('donation_scopes', 'id')->where('is_active', true)],
-            'research_authorized' => ['accepted'],
-            'health_answers' => ['required', 'array'],
-            'health_answers.*' => [Rule::exists('health_answer_options', 'id')->where('is_active', true)],
-            'signed_name' => ['required', 'string', 'max:180', 'regex:/^\p{Lu}\p{Ll}*(?: \p{Lu}\p{Ll}*)+$/u'],
-            'voluntary_accepted' => ['accepted'],
-            'electronically_accepted' => ['accepted'],
-            'sensitive_data_authorized' => ['accepted'],
-            'institutional_query_authorized' => ['accepted'],
-            'cornea_information_acknowledged' => ['nullable', 'boolean'],
+            'consent_accepted' => ['accepted'],
         ];
     }
 
@@ -69,12 +60,6 @@ class RegisterDonorRequest extends FormRequest
                 $validator->errors()->add('corregimiento_id', 'El corregimiento no pertenece al distrito seleccionado.');
             }
 
-            $requiredQuestions = \DB::table('health_questions')->where('is_active', true)->where('is_required', true)->pluck('id');
-            foreach ($requiredQuestions as $questionId) {
-                if (! $this->filled("health_answers.$questionId")) {
-                    $validator->errors()->add("health_answers.$questionId", 'Esta respuesta médica es obligatoria.');
-                }
-            }
         }];
     }
 
@@ -86,14 +71,12 @@ class RegisterDonorRequest extends FormRequest
             'birth_date.before_or_equal' => 'Debes tener al menos 18 años para completar el registro.',
             '*.regex' => 'Cada nombre o apellido debe iniciar con mayúscula y contener solamente letras.',
             'contacts.*.*.regex' => 'Cada nombre o apellido debe iniciar con mayúscula y contener solamente letras.',
-            'signed_name.regex' => 'La firma debe contener nombres y apellidos iniciados con mayúscula y solamente letras.',
             'email.email' => 'Ingresa un correo electrónico válido.',
             'contacts.*.email.email' => 'Ingresa un correo electrónico válido.',
             'contacts.min' => 'Debes registrar al menos un contacto.',
             'phone.regex' => 'Usa uno de estos formatos de Panamá: 123-4567 o 6123-4567.',
             'contacts.*.phone.regex' => 'Usa uno de estos formatos de Panamá: 123-4567 o 6123-4567.',
-            'research_authorized.accepted' => 'Debes autorizar este uso para continuar.',
-            '*.accepted' => 'Debes aceptar esta condición para continuar.',
+            'consent_accepted.accepted' => 'Debes aceptar el consentimiento para continuar.',
         ];
     }
 
@@ -126,7 +109,6 @@ class RegisterDonorRequest extends FormRequest
             'middle_name' => trim((string) $this->input('middle_name')) ?: null,
             'first_last_name' => trim((string) $this->input('first_last_name')),
             'second_last_name' => trim((string) $this->input('second_last_name')) ?: null,
-            'signed_name' => trim((string) $this->input('signed_name')),
             'contacts' => $contacts,
         ]);
     }

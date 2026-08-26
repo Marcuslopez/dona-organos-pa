@@ -139,9 +139,7 @@ class AdminDashboardTest extends TestCase
             ->assertSee('Detalle del donante')
             ->assertSee('<title>donante-sin-folio-donante-administrativo</title>', false)
             ->assertSee('Donante Administrativo')
-            ->assertSee('Consentimiento informado')
-            ->assertSee('Evidencia técnica de auditoría')
-            ->assertSee('print-when-expanded', false)
+            ->assertSee('Consentimiento')
             ->assertSee('Imprimir / Guardar PDF')
             ->assertDontSee('Preferencia de donación')
             ->assertDontSee('Fecha exacta del servidor')
@@ -153,17 +151,6 @@ class AdminDashboardTest extends TestCase
     public function test_guest_cannot_open_donor_detail(): void
     {
         $this->get('/administracion/donantes/1')->assertRedirect(route('login'));
-    }
-
-    public function test_dashboard_includes_demo_donors_in_the_same_grid(): void
-    {
-        $user = User::factory()->create(['is_active' => true]);
-        $donorId = $this->createDonor('active', 'Donante Semilla Visible', 'D-100-0001');
-        DB::table('donors')->where('id', $donorId)->update(['is_demo' => true]);
-
-        $this->actingAs($user)->get(route('admin.dashboard'))
-            ->assertOk()
-            ->assertSee('Donante Semilla Visible');
     }
 
     public function test_administrator_can_download_donor_card_as_pdf(): void

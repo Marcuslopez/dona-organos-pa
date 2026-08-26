@@ -14,7 +14,7 @@
             <a class="auth-brand identity-card-brand" href="{{ route('home') }}">DONA ÓRGANOS PANAMÁ</a>
             <p class="step-indicator"><span>Paso 2 de 2</span> Registro de voluntad</p>
             <h1>{{ $isUpdate ? 'Actualizar mis datos' : ($isReactivation ? 'Reactivar mi voluntad' : 'Registro de donante') }}</h1>
-            <p class="registration-intro">{{ $isUpdate ? 'Revisa tus datos y contactos. Si cambias tus contactos o decisión de donación, emitiremos un carné actualizado.' : ($isReactivation ? 'Revisa y actualiza tus datos. Las respuestas médicas y el consentimiento deben completarse nuevamente.' : 'Completa tus datos, registra al menos un contacto y confirma tu voluntad.') }}</p>
+            <p class="registration-intro">{{ $isUpdate ? 'Revisa tus datos y contactos. Si cambias tus contactos de confianza, emitiremos un carné actualizado.' : ($isReactivation ? 'Revisa y actualiza tus datos. Debes confirmar nuevamente tu consentimiento para reactivar el registro.' : 'Completa tus datos, registra al menos un contacto y confirma tu voluntad.') }}</p>
 
             @if ($errors->any())
                 <div class="alert alert-danger" role="alert"><strong>Revisa los campos indicados.</strong> La información todavía no fue registrada.</div>
@@ -76,45 +76,40 @@
                 <button class="btn btn-outline-primary" type="button" data-add-contact>Agregar otro contacto</button>
                 @error('contacts')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
             </fieldset>
-
-            <fieldset class="form-section">
-                <legend>Información médica</legend>
-                <p class="section-help">Estas respuestas apoyan una futura evaluación clínica; no determinan por sí solas la posibilidad de donar.</p>
-                @foreach($catalogs['healthQuestions'] as $question)
-                    <div class="medical-question">
-                        <p>{{ $question->text }} @if($question->is_required)<span class="required-mark">*</span>@endif</p>
-                                <div class="answer-options">@foreach($catalogs['answerOptions'] as $option)<label><input type="radio" name="health_answers[{{ $question->id }}]" value="{{ $option->id }}" @checked($value("health_answers.$question->id") == $option->id) @required($question->is_required)> {{ $option->name }}</label>@endforeach</div>
-                        @error("health_answers.$question->id")<div class="text-danger small">{{ $message }}</div>@enderror
-                    </div>
-                @endforeach
-            </fieldset>
-
             <fieldset class="form-section consent-section">
-                <legend>Alcance y consentimiento</legend>
-                <div class="mb-4">
-                    <p class="form-label mb-2">Deseo registrar mi voluntad para <span>*</span></p>
-                    <div class="scope-options" role="radiogroup" aria-label="Alcance de la donación">
-                        @foreach($catalogs['donationScopes'] as $option)
-                            <label class="scope-option" for="scope{{ $option->id }}">
-                                <input class="form-check-input @error('donation_scope_id') is-invalid @enderror" id="scope{{ $option->id }}" name="donation_scope_id" type="radio" value="{{ $option->id }}" @checked($value('donation_scope_id') == $option->id) required>
-                                <span>{{ $option->name }}</span>
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('donation_scope_id')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
+                <legend>Consentimiento</legend>
+                <div class="form-check consent-check">
+                    <input class="form-check-input @error('consent_accepted') is-invalid @enderror" id="consentAccepted" name="consent_accepted" type="checkbox" value="1" @checked(old('consent_accepted')) required>
+                    <label class="form-check-label" for="consentAccepted">Confirmo que mi decisión de donar órganos es libre, voluntaria e informada, y autorizo el tratamiento de mis datos personales para este registro. He leído y acepto las <button class="contact-policy-link" type="button" data-bs-toggle="modal" data-bs-target="#privacyPolicyModal">condiciones de uso y política de privacidad</button>. <span class="required-mark">*</span></label>
+                    @error('consent_accepted')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
-                @php($checks = ['research_authorized' => 'Autorizo el uso para investigación médica conforme a las normas aplicables.', 'voluntary_accepted' => 'Declaro que esta decisión es libre y voluntaria.', 'electronically_accepted' => 'Acepto formalizar esta voluntad por medios electrónicos.', 'sensitive_data_authorized' => 'Autorizo el tratamiento de mis datos personales y sensibles para este registro.', 'institutional_query_authorized' => 'Autorizo a las instituciones competentes a consultar esta información.'])
-                @foreach($checks as $name => $label)<div class="form-check consent-check"><input class="form-check-input @error($name) is-invalid @enderror" id="{{ $name }}" name="{{ $name }}" type="checkbox" value="1" @checked(old($name)) required><label class="form-check-label" for="{{ $name }}">{{ $label }} <span class="required-mark">*</span></label>@error($name)<div class="invalid-feedback">{{ $message }}</div>@enderror</div>@endforeach
-                <div class="form-check consent-check"><input class="form-check-input" id="corneaAcknowledged" name="cornea_information_acknowledged" type="checkbox" value="1" @checked(old('cornea_information_acknowledged'))><label class="form-check-label" for="corneaAcknowledged">Confirmo que leí la información específica sobre donación de córneas.</label></div>
-                <div class="mt-4"><label class="form-label" for="signedName">Firma electrónica: escribe tu nombre completo <span>*</span></label><input class="form-control @error('signed_name') is-invalid @enderror" id="signedName" name="signed_name" value="{{ old('signed_name') }}" data-person-name required>@error('signed_name')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                <div class="mt-4"><label class="form-label" for="signedName">Firma electrónica</label><input class="form-control" id="signedName" placeholder="Por definir…" disabled><div class="form-text">La integración de validación biométrica será definida por la institución antes de su puesta en producción.</div></div>
             </fieldset>
 
             <div class="registration-form-actions">
                 <button class="btn btn-primary registration-submit" type="submit">{{ $isUpdate ? 'Confirmar actualización' : ($isReactivation ? 'Confirmar reactivación' : 'Registrar mi voluntad') }}</button>
                 <a class="btn btn-primary registration-back" href="{{ route('home') }}">Volver al inicio</a>
             </div>
-            <p class="registration-security">La cédula validada, fecha de aceptación y datos técnicos de la sesión se conservarán como evidencia del consentimiento.</p>
+            <p class="registration-security">La fecha, versión y estado del consentimiento se conservarán como evidencia de tu decisión.</p>
         </form>
     </div>
 </main>
+
+<div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title fs-5" id="privacyPolicyTitle">Condiciones de uso y política de privacidad</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Esta plantilla de Política de Privacidad está diseñada para cumplir con la <a href="https://istmodigital.net/que-exige-la-ley-81-de-proteccion-de-datos-en-panama" target="_blank" rel="noopener">Ley 81 de 2019 y el Decreto Ejecutivo 285 de 2021 de Panamá</a>, cubriendo la recopilación de datos, finalidades y derechos ARCO. El texto establece el consentimiento expreso y medidas de seguridad técnicas para el uso de formularios del portal. Puede obtener más información sobre la normativa en el sitio web de la Autoridad Nacional de Transparencia y Acceso a la Información (ANTAI).</p>
+                <p><a href="https://www.arispeabogado.com/p/politicas-y-privacidad.html" target="_blank" rel="noopener">Referencia de plantilla de política de privacidad</a>.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

@@ -79,20 +79,11 @@ class DashboardController extends Controller
             ->join('relationships', 'relationships.id', '=', 'donor_contacts.relationship_id')
             ->select('donor_contacts.*', 'relationships.name as relationship_name')
             ->where('donor_id', $donor)->orderByDesc('is_primary')->get();
-        $preference = DB::table('donation_preferences')
-            ->join('donation_scopes', 'donation_scopes.id', '=', 'donation_preferences.donation_scope_id')
-            ->select('donation_preferences.*', 'donation_scopes.name as scope_name')
-            ->where('donor_id', $donor)->first();
-        $healthAnswers = DB::table('donor_health_answers')
-            ->join('health_questions', 'health_questions.id', '=', 'donor_health_answers.health_question_id')
-            ->join('health_answer_options', 'health_answer_options.id', '=', 'donor_health_answers.health_answer_option_id')
-            ->select('health_questions.text as question', 'health_answer_options.name as answer')
-            ->where('donor_id', $donor)->orderBy('health_questions.sort_order')->get();
         $consent = DB::table('consents')->where('donor_id', $donor)->latest('accepted_at')->first();
         $card = DB::table('donor_cards')->where('donor_id', $donor)->orderByDesc('issued_at')->orderByDesc('id')->first();
         $cardView = $cardService->find($donor);
 
-        return view('admin.donors.show', compact('record', 'contacts', 'preference', 'healthAnswers', 'consent', 'card', 'cardView'));
+        return view('admin.donors.show', compact('record', 'contacts', 'consent', 'card', 'cardView'));
     }
 
     private function filteredDonors(string $name, string $document, string $province, string $status, string $dateFrom, string $dateTo): mixed

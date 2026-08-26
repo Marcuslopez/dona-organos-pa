@@ -45,11 +45,7 @@ class DonorRegistrationService
                 return $contact;
             })->all();
 
-            $preference = DB::table('donation_preferences')->where('donor_id', $donor->id)->first();
-            $previousScope = (int) $preference?->donation_scope_id;
-            $newScope = (int) $data['donation_scope_id'];
             $contactsChanged = $previousContacts !== $newContacts;
-            $scopeChanged = $previousScope !== $newScope;
             $personalChanged = $previousPersonal != $newPersonal;
 
             DB::table('donors')->where('id', $donor->id)->update([
@@ -58,18 +54,8 @@ class DonorRegistrationService
                 'updated_at' => $now,
             ]);
             $this->replaceContacts((int) $donor->id, $data['contacts'], $now);
-            DB::table('donation_preferences')->updateOrInsert(
-                ['donor_id' => $donor->id],
-                ['donation_scope_id' => $newScope, 'research_authorized' => true, 'updated_at' => $now, 'created_at' => $preference?->created_at ?? $now],
-            );
-            $this->replaceHealthAnswers((int) $donor->id, $data['health_answers'], $now);
 
-            if ($scopeChanged) {
-                DB::table('consents')->where('donor_id', $donor->id)->whereNull('revoked_at')->update(['revoked_at' => $now, 'updated_at' => $now]);
-                $this->createConsent((int) $donor->id, $data, $request, $now);
-            }
-
-            $cardReissued = $scopeChanged || $contactsChanged;
+            $cardReissued = $contactsChanged;
             if ($cardReissued) {
                 DB::table('donor_cards')->where('donor_id', $donor->id)->whereNull('revoked_at')->update(['revoked_at' => $now, 'updated_at' => $now]);
                 $folio = $this->issueCard((int) $donor->id, $now);
@@ -80,14 +66,13 @@ class DonorRegistrationService
             $changedFields = array_values(array_filter([
                 $personalChanged ? 'personal_data' : null,
                 $contactsChanged ? 'contacts' : null,
-                $scopeChanged ? 'donation_scope' : null,
             ]));
             if ($changedFields !== []) {
                 DB::table('donor_change_history')->insert([
                     'donor_id' => $donor->id,
                     'changed_fields' => json_encode($changedFields, JSON_UNESCAPED_UNICODE),
-                    'previous_values' => json_encode(['personal' => $previousPersonal, 'contacts' => $previousContacts, 'donation_scope_id' => $previousScope], JSON_UNESCAPED_UNICODE),
-                    'new_values' => json_encode(['personal' => $newPersonal, 'contacts' => $newContacts, 'donation_scope_id' => $newScope], JSON_UNESCAPED_UNICODE),
+                    'previous_values' => json_encode(['personal' => $previousPersonal, 'contacts' => $previousContacts], JSON_UNESCAPED_UNICODE),
+                    'new_values' => json_encode(['personal' => $newPersonal, 'contacts' => $newContacts], JSON_UNESCAPED_UNICODE),
                     'source' => 'donor',
                     'request_id' => (string) Str::uuid(),
                     'ip_address' => $request->ip(),
@@ -151,42 +136,7 @@ class DonorRegistrationService
                 ]);
             }
 
-            DB::table('donation_preferences')->updateOrInsert(
-                ['donor_id' => $donor->id],
-                ['donation_scope_id' => $data['donation_scope_id'], 'research_authorized' => true, 'updated_at' => $now, 'created_at' => $now],
-            );
-
-            DB::table('donor_health_answers')->where('donor_id', $donor->id)->delete();
-            $activeQuestionIds = DB::table('health_questions')->where('is_active', true)->pluck('id')->map(fn ($id) => (string) $id);
-            foreach ($data['health_answers'] as $questionId => $answerOptionId) {
-                if ($activeQuestionIds->contains((string) $questionId)) {
-                    DB::table('donor_health_answers')->insert([
-                        'donor_id' => $donor->id,
-                        'health_question_id' => $questionId,
-                        'health_answer_option_id' => $answerOptionId,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ]);
-                }
-            }
-
-            $consentNumber = DB::table('consents')->where('donor_id', $donor->id)->count() + 1;
-            DB::table('consents')->insert([
-                'donor_id' => $donor->id,
-                'version' => $consentNumber.'.0',
-                'signed_name' => $data['signed_name'],
-                'voluntary_accepted' => true,
-                'electronically_accepted' => true,
-                'sensitive_data_authorized' => true,
-                'institutional_query_authorized' => true,
-                'cornea_information_acknowledged' => (bool) ($data['cornea_information_acknowledged'] ?? false),
-                'accepted_at' => $now,
-                'request_id' => (string) Str::uuid(),
-                'ip_address' => $request->ip(),
-                'user_agent' => Str::limit((string) $request->userAgent(), 500, ''),
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
+            $this->createConsent((int) $donor->id, $now);
 
             $folio = $this->nextFolio($now);
             $publicToken = hash_hmac('sha256', $donor->id.'|'.$folio, (string) config('app.key'));
@@ -284,43 +234,7 @@ class DonorRegistrationService
                 ]);
             }
 
-            DB::table('donation_preferences')->insert([
-                'donor_id' => $donorId,
-                'donation_scope_id' => $data['donation_scope_id'],
-                'research_authorized' => true,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-
-            DB::table('consents')->insert([
-                'donor_id' => $donorId,
-                'version' => '1.0',
-                'signed_name' => $data['signed_name'],
-                'voluntary_accepted' => true,
-                'electronically_accepted' => true,
-                'sensitive_data_authorized' => true,
-                'institutional_query_authorized' => true,
-                'cornea_information_acknowledged' => (bool) ($data['cornea_information_acknowledged'] ?? false),
-                'accepted_at' => $now,
-                'request_id' => (string) Str::uuid(),
-                'ip_address' => $request->ip(),
-                'user_agent' => Str::limit((string) $request->userAgent(), 500, ''),
-                'created_at' => $now,
-                'updated_at' => $now,
-            ]);
-
-            $activeQuestionIds = DB::table('health_questions')->where('is_active', true)->pluck('id')->map(fn ($id) => (string) $id);
-            foreach ($data['health_answers'] as $questionId => $answerOptionId) {
-                if ($activeQuestionIds->contains((string) $questionId)) {
-                    DB::table('donor_health_answers')->insert([
-                        'donor_id' => $donorId,
-                        'health_question_id' => $questionId,
-                        'health_answer_option_id' => $answerOptionId,
-                        'created_at' => $now,
-                        'updated_at' => $now,
-                    ]);
-                }
-            }
+            $this->createConsent($donorId, $now);
 
             $folio = $this->nextFolio($now);
             $publicToken = hash_hmac('sha256', $donorId.'|'.$folio, (string) config('app.key'));
@@ -375,39 +289,15 @@ class DonorRegistrationService
         }
     }
 
-    private function replaceHealthAnswers(int $donorId, array $answers, mixed $now): void
+    private function createConsent(int $donorId, mixed $now): void
     {
-        DB::table('donor_health_answers')->where('donor_id', $donorId)->delete();
-        $activeQuestionIds = DB::table('health_questions')->where('is_active', true)->pluck('id')->map(fn ($id) => (string) $id);
-        foreach ($answers as $questionId => $answerOptionId) {
-            if ($activeQuestionIds->contains((string) $questionId)) {
-                DB::table('donor_health_answers')->insert([
-                    'donor_id' => $donorId,
-                    'health_question_id' => $questionId,
-                    'health_answer_option_id' => $answerOptionId,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ]);
-            }
-        }
-    }
-
-    private function createConsent(int $donorId, array $data, Request $request, mixed $now): void
-    {
-        $consentNumber = DB::table('consents')->where('donor_id', $donorId)->count() + 1;
+        $consentNumber = (int) DB::table('consents')->where('donor_id', $donorId)->max('consent_sequence') + 1;
         DB::table('consents')->insert([
             'donor_id' => $donorId,
-            'version' => $consentNumber.'.0',
-            'signed_name' => $data['signed_name'],
-            'voluntary_accepted' => true,
-            'electronically_accepted' => true,
-            'sensitive_data_authorized' => true,
-            'institutional_query_authorized' => true,
-            'cornea_information_acknowledged' => (bool) ($data['cornea_information_acknowledged'] ?? false),
+            'consent_sequence' => $consentNumber,
+            'accepted' => true,
+            'version' => '2.0',
             'accepted_at' => $now,
-            'request_id' => (string) Str::uuid(),
-            'ip_address' => $request->ip(),
-            'user_agent' => Str::limit((string) $request->userAgent(), 500, ''),
             'created_at' => $now,
             'updated_at' => $now,
         ]);

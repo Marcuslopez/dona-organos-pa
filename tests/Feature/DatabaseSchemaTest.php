@@ -16,19 +16,15 @@ class DatabaseSchemaTest extends TestCase
         $this->seed();
 
         foreach ([
-            'genders', 'relationships', 'donation_scopes', 'health_answer_options',
+            'genders', 'relationships',
             'provinces', 'districts', 'corregimientos', 'donors', 'donor_contacts',
-            'donation_preferences', 'consents', 'health_questions',
-            'donor_health_answers', 'donor_cards', 'contents', 'content_media',
+            'consents', 'donor_cards', 'contents', 'content_media',
         ] as $table) {
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
         }
 
         $this->assertDatabaseCount('genders', 4);
         $this->assertDatabaseCount('relationships', 6);
-        $this->assertDatabaseCount('donation_scopes', 2);
-        $this->assertDatabaseCount('health_answer_options', 3);
-        $this->assertDatabaseCount('health_questions', 4);
         $this->assertDatabaseCount('provinces', 14);
         $this->assertDatabaseCount('districts', 83);
         $this->assertDatabaseCount('corregimientos', 702);
@@ -43,7 +39,16 @@ class DatabaseSchemaTest extends TestCase
                 $this->assertTrue(Schema::hasColumn($table, $column), "Missing column: {$table}.{$column}");
             }
         }
-        $this->assertTrue(Schema::hasColumn('donors', 'is_demo'));
+        $this->assertFalse(Schema::hasColumn('donors', 'is_demo'));
+        foreach (['consent_sequence', 'accepted', 'revoked_at', 'revocation_reason'] as $column) {
+            $this->assertTrue(Schema::hasColumn('consents', $column), "Missing column: consents.{$column}");
+        }
+        foreach (['signed_name', 'voluntary_accepted', 'electronically_accepted', 'sensitive_data_authorized', 'institutional_query_authorized', 'cornea_information_acknowledged', 'request_id', 'ip_address', 'user_agent'] as $column) {
+            $this->assertFalse(Schema::hasColumn('consents', $column), "Obsolete column remains: consents.{$column}");
+        }
+        foreach (['donation_scopes', 'health_answer_options', 'health_questions', 'donation_preferences', 'donor_health_answers'] as $table) {
+            $this->assertFalse(Schema::hasTable($table), "Obsolete table remains: {$table}");
+        }
         $this->assertTrue(Schema::hasColumn('contents', 'subtitle'));
         $this->assertFalse(Schema::hasColumn('contents', 'related_url'));
         foreach (['content_id', 'media_type', 'disk', 'path', 'mime_type', 'size_bytes', 'width', 'height', 'alt_text'] as $column) {
