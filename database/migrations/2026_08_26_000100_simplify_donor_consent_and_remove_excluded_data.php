@@ -59,6 +59,13 @@ return new class extends Migration
                 }
             });
 
+        // La nueva clave también comienza por donor_id. Se crea antes de retirar
+        // la anterior para que MySQL conserve el índice que necesita la FK de
+        // consents.donor_id hacia donors.id.
+        if (! $this->indexExists('consents', 'consents_donor_sequence_unique')) {
+            Schema::table('consents', fn (Blueprint $table) => $table->unique(['donor_id', 'consent_sequence'], 'consents_donor_sequence_unique'));
+        }
+
         if ($this->indexExists('consents', 'consents_donor_id_version_unique')) {
             Schema::table('consents', fn (Blueprint $table) => $table->dropUnique('consents_donor_id_version_unique'));
         }
@@ -66,10 +73,6 @@ return new class extends Migration
         $obsoleteColumns = array_values(array_filter($obsoleteColumns, fn (string $column) => Schema::hasColumn('consents', $column)));
         if ($obsoleteColumns !== []) {
             Schema::table('consents', fn (Blueprint $table) => $table->dropColumn($obsoleteColumns));
-        }
-
-        if (! $this->indexExists('consents', 'consents_donor_sequence_unique')) {
-            Schema::table('consents', fn (Blueprint $table) => $table->unique(['donor_id', 'consent_sequence'], 'consents_donor_sequence_unique'));
         }
     }
 
