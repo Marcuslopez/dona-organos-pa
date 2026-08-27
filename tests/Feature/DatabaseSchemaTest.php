@@ -43,7 +43,11 @@ class DatabaseSchemaTest extends TestCase
         foreach (['consent_sequence', 'accepted', 'revoked_at', 'revocation_reason'] as $column) {
             $this->assertTrue(Schema::hasColumn('consents', $column), "Missing column: consents.{$column}");
         }
-        foreach (['signed_name', 'voluntary_accepted', 'electronically_accepted', 'sensitive_data_authorized', 'institutional_query_authorized', 'cornea_information_acknowledged', 'request_id', 'ip_address', 'user_agent'] as $column) {
+        foreach (['request_id', 'ip_address', 'user_agent'] as $column) {
+            $this->assertTrue(Schema::hasColumn('consents', $column), "Missing audit column: consents.{$column}");
+        }
+
+        foreach (['signed_name', 'voluntary_accepted', 'electronically_accepted', 'sensitive_data_authorized', 'institutional_query_authorized', 'cornea_information_acknowledged'] as $column) {
             $this->assertFalse(Schema::hasColumn('consents', $column), "Obsolete column remains: consents.{$column}");
         }
         foreach (['donation_scopes', 'health_answer_options', 'health_questions', 'donation_preferences', 'donor_health_answers'] as $table) {

@@ -47,6 +47,7 @@ class DonorRegistrationTest extends TestCase
         $donorId = DB::table('donors')->where('document_number', '8-123-1234')->value('id');
         $this->assertDatabaseCount('donor_contacts', 1);
         $this->assertDatabaseHas('consents', ['donor_id' => $donorId, 'consent_sequence' => 1, 'accepted' => true, 'version' => '2.0', 'revoked_at' => null]);
+        $this->assertNotNull(DB::table('consents')->where('donor_id', $donorId)->value('request_id'));
         $this->assertDatabaseHas('donor_cards', ['donor_id' => $donorId, 'folio' => 'CD-0000001', 'revoked_at' => null]);
         $this->assertNull(session('identity_verification'));
     }

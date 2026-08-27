@@ -136,7 +136,7 @@ class DonorRegistrationService
                 ]);
             }
 
-            $this->createConsent((int) $donor->id, $now);
+            $this->createConsent((int) $donor->id, $now, $request);
 
             $folio = $this->nextFolio($now);
             $publicToken = hash_hmac('sha256', $donor->id.'|'.$folio, (string) config('app.key'));
@@ -234,7 +234,7 @@ class DonorRegistrationService
                 ]);
             }
 
-            $this->createConsent($donorId, $now);
+            $this->createConsent($donorId, $now, $request);
 
             $folio = $this->nextFolio($now);
             $publicToken = hash_hmac('sha256', $donorId.'|'.$folio, (string) config('app.key'));
@@ -289,7 +289,7 @@ class DonorRegistrationService
         }
     }
 
-    private function createConsent(int $donorId, mixed $now): void
+    private function createConsent(int $donorId, mixed $now, Request $request): void
     {
         $consentNumber = (int) DB::table('consents')->where('donor_id', $donorId)->max('consent_sequence') + 1;
         DB::table('consents')->insert([
@@ -298,6 +298,9 @@ class DonorRegistrationService
             'accepted' => true,
             'version' => '2.0',
             'accepted_at' => $now,
+            'request_id' => (string) Str::uuid(),
+            'ip_address' => $request->ip(),
+            'user_agent' => Str::limit((string) $request->userAgent(), 500, ''),
             'created_at' => $now,
             'updated_at' => $now,
         ]);

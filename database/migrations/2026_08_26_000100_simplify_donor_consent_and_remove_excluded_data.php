@@ -25,7 +25,8 @@ return new class extends Migration
 
     /**
      * Conserva el historial de decisiones y elimina campos que ya no forman
-     * parte del consentimiento único del portal.
+     * parte del consentimiento único del portal. La evidencia técnica
+     * (solicitud, IP y navegador) se conserva para trazabilidad.
      */
     private function simplifyConsents(): void
     {
@@ -61,11 +62,7 @@ return new class extends Migration
         if ($this->indexExists('consents', 'consents_donor_id_version_unique')) {
             Schema::table('consents', fn (Blueprint $table) => $table->dropUnique('consents_donor_id_version_unique'));
         }
-        if ($this->indexExists('consents', 'consents_request_id_index')) {
-            Schema::table('consents', fn (Blueprint $table) => $table->dropIndex('consents_request_id_index'));
-        }
-
-        $obsoleteColumns = ['signed_name', 'voluntary_accepted', 'electronically_accepted', 'sensitive_data_authorized', 'institutional_query_authorized', 'cornea_information_acknowledged', 'request_id', 'ip_address', 'user_agent'];
+        $obsoleteColumns = ['signed_name', 'voluntary_accepted', 'electronically_accepted', 'sensitive_data_authorized', 'institutional_query_authorized', 'cornea_information_acknowledged'];
         $obsoleteColumns = array_values(array_filter($obsoleteColumns, fn (string $column) => Schema::hasColumn('consents', $column)));
         if ($obsoleteColumns !== []) {
             Schema::table('consents', fn (Blueprint $table) => $table->dropColumn($obsoleteColumns));
