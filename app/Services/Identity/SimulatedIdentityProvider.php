@@ -8,8 +8,7 @@ class SimulatedIdentityProvider implements IdentityProvider
 {
     public function verify(string $documentNumber, string $documentCode): bool
     {
-        return ! app()->environment('production')
-            && config('identity.allow_test_identities')
+        return config('identity.allow_test_identities')
             && $documentNumber !== ''
             && $documentCode !== '';
     }
