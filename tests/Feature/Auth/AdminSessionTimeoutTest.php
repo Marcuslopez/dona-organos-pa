@@ -5,6 +5,8 @@ namespace Tests\Feature\Auth;
 use App\Http\Middleware\EnsureAdminSessionIsActive;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AdminSessionTimeoutTest extends TestCase
@@ -27,6 +29,7 @@ class AdminSessionTimeoutTest extends TestCase
             'is_active' => true,
         ]);
 
+        $this->completeCodeChallenge($user);
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'Administrator',
@@ -35,6 +38,26 @@ class AdminSessionTimeoutTest extends TestCase
         $response->assertRedirect(route('admin.dashboard'))
             ->assertSessionHas(EnsureAdminSessionIsActive::STARTED_AT_KEY)
             ->assertSessionHas(EnsureAdminSessionIsActive::LAST_ACTIVITY_KEY);
+    }
+
+    private function completeCodeChallenge(User $user): void
+    {
+        $code = '123456';
+        DB::table('admin_login_codes')->insert([
+            'user_id' => $user->id,
+            'code_hash' => Hash::make($code),
+            'attempts' => 0,
+            'expires_at' => now()->addMinute(),
+            'last_sent_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->withSession(['admin_login' => [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'code_verified_at' => now()->timestamp,
+        ]]);
     }
 
     public function test_inactive_admin_is_logged_out_after_two_minutes(): void

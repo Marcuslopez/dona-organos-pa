@@ -7,13 +7,14 @@ use App\Http\Requests\Admin\StoreAdministrativeUserRequest;
 use App\Http\Requests\Admin\UpdateAdministrativeUserRequest;
 use App\Models\User;
 use App\Services\AdministrativeUserService;
+use App\Services\MasterReauthenticationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AdministrativeUserController extends Controller
 {
-    public function __construct(private readonly AdministrativeUserService $service) {}
+    public function __construct(private readonly AdministrativeUserService $service, private readonly MasterReauthenticationService $reauthentication) {}
 
     public function index(Request $request): View
     {
@@ -38,6 +39,7 @@ class AdministrativeUserController extends Controller
 
     public function store(StoreAdministrativeUserRequest $request): RedirectResponse
     {
+        $this->reauthentication->verify($request);
         $this->service->create($request->validated(), $request->user(), $request);
 
         return redirect()->route('admin.users.index')->with('status', 'Usuario administrativo creado correctamente.');
@@ -45,6 +47,7 @@ class AdministrativeUserController extends Controller
 
     public function update(UpdateAdministrativeUserRequest $request, User $user): RedirectResponse
     {
+        $this->reauthentication->verify($request);
         $this->service->update($user, $request->validated(), $request->user(), $request);
 
         return redirect()->route('admin.users.index')->with('status', 'Usuario administrativo actualizado correctamente.');

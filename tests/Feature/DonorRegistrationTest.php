@@ -143,7 +143,7 @@ class DonorRegistrationTest extends TestCase
             'document_number' => '8-123-1234',
             'document_code' => 'ABC123456',
             'captcha' => 'abc234',
-        ])->assertRedirect(route('registration.identity.verified'));
+        ])->assertRedirect(route('registration.email-code.create'));
     }
 
     public function test_active_donor_can_view_and_print_card_before_withdrawing(): void

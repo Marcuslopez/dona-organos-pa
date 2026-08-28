@@ -42,6 +42,7 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '1',
             'password' => 'TemporaryAdmin123',
             'password_confirmation' => 'TemporaryAdmin123',
+            'current_master_password' => 'password',
         ]);
 
         $response->assertRedirect(route('admin.users.index'));
@@ -67,6 +68,7 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '0',
             'password' => '',
             'password_confirmation' => '',
+            'current_master_password' => 'password',
         ]);
 
         $response->assertSessionHasErrors('role');
@@ -87,6 +89,7 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '0',
             'password' => '',
             'password_confirmation' => '',
+            'current_master_password' => 'password',
         ]);
 
         $response->assertRedirect(route('admin.users.index'));

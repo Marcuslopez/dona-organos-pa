@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Contracts\IdentityProvider;
 use App\Http\Middleware\EnsureDonorSessionIsActive;
 use App\Http\Requests\VerifyIdentityRequest;
+use App\Mail\DonorAccessCodeMail;
 use App\Services\DonorCardService;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -77,7 +80,12 @@ class IdentityVerificationController extends Controller
 
         $documentCode = $request->string('document_code')->toString();
         $documentCodeFingerprint = hash_hmac('sha256', $documentCode, (string) config('app.key'));
-        $donor = DB::table('donors')->where('document_number', $documentNumber)->first(['status', 'document_code_hash']);
+        $donor = DB::table('donors')->where('document_number', $documentNumber)->first(['id', 'status', 'document_code_hash', 'email', 'first_name']);
+        $donorCodeKey = $donor ? 'donor-email-code|'.$donor->id.'|'.$request->ip() : null;
+        if ($donorCodeKey && RateLimiter::tooManyAttempts($donorCodeKey, 1)) {
+            $seconds = RateLimiter::availableIn($donorCodeKey);
+            throw ValidationException::withMessages(['document_code' => "Por seguridad, espera {$seconds} segundos antes de volver a intentarlo."]);
+        }
         $identityMatches = $provider->verify($documentNumber, $documentCode);
 
         $codeBelongsToAnotherDocument = DB::table('donors')
@@ -111,6 +119,8 @@ class IdentityVerificationController extends Controller
             'document_number' => $documentNumber,
             'verified_at' => now()->timestamp,
             'donor_status' => $donorStatus,
+            'donor_id' => $donor?->id,
+            'donor_name' => $donor?->first_name,
             'document_code_hash' => $donor === null ? Hash::make($documentCode) : null,
             'document_code_fingerprint' => $donor === null ? $documentCodeFingerprint : null,
         ]);
@@ -120,9 +130,77 @@ class IdentityVerificationController extends Controller
         ]);
         $request->session()->regenerate();
 
+        if ($donor !== null) {
+            $accessToken = Str::random(80);
+            DB::table('donors')->where('id', $donor->id)->update(['active_access_token' => $accessToken]);
+            $request->session()->put('identity_verification.active_access_token', $accessToken);
+            $this->issueDonorAccessCode($donor);
+        }
+
         return redirect()->route($donorStatus === null
             ? 'registration.form'
-            : 'registration.identity.verified');
+            : 'registration.email-code.create');
+    }
+
+    public function createEmailCode(Request $request): View|RedirectResponse
+    {
+        $verification = $request->session()->get('identity_verification');
+        if (! is_array($verification) || ! filled($verification['donor_id'] ?? null)) {
+            return redirect()->route('registration.identity');
+        }
+
+        $maskedEmail = Str::mask((string) DB::table('donors')->where('id', $verification['donor_id'])->value('email'), '*', 2, 99);
+
+        return view('registration.email-code', compact('verification', 'maskedEmail'));
+    }
+
+    public function verifyEmailCode(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['code' => ['required', 'digits:6']]);
+        $verification = $request->session()->get('identity_verification');
+        $donorId = is_array($verification) ? (int) ($verification['donor_id'] ?? 0) : 0;
+        $record = $donorId ? DB::table('donor_access_codes')->where('donor_id', $donorId)->first() : null;
+        $valid = $record && ! $record->consumed_at && $record->attempts < config('access_security.donor.code_max_attempts') && Hash::check($data['code'], $record->code_hash);
+
+        if (! $valid) {
+            if ($record && ! $record->consumed_at) {
+                DB::table('donor_access_codes')->where('id', $record->id)->increment('attempts');
+                $attempts = $record->attempts + 1;
+                if ($attempts >= (int) config('access_security.donor.code_max_attempts')) {
+                    $request->session()->forget('identity_verification');
+                    RateLimiter::hit('donor-email-code|'.$donorId.'|'.$request->ip(), max(1, (int) config('access_security.donor.lockout_seconds')));
+                    return redirect()->route('registration.identity')->withErrors(['document_code' => 'No fue posible verificar el código. Intenta nuevamente en 30 segundos.']);
+                }
+            }
+
+            return back()->withErrors(['code' => 'El código no es válido o ya no puede utilizarse.']);
+        }
+
+        DB::table('donor_access_codes')->where('id', $record->id)->update(['consumed_at' => now(), 'updated_at' => now()]);
+        $request->session()->put('identity_verification.email_verified_at', now()->timestamp);
+
+        return redirect()->route('registration.identity.verified');
+    }
+
+    public function resendEmailCode(Request $request): RedirectResponse
+    {
+        $verification = $request->session()->get('identity_verification');
+        $donor = is_array($verification) && filled($verification['donor_id'] ?? null)
+            ? DB::table('donors')->where('id', $verification['donor_id'])->first(['id', 'email', 'first_name'])
+            : null;
+
+        if (! $donor) return redirect()->route('registration.identity');
+
+        $record = DB::table('donor_access_codes')->where('donor_id', $donor->id)->first();
+        $availableAt = $record?->last_sent_at
+            ? Carbon::parse($record->last_sent_at)->addSeconds((int) config('access_security.donor.code_resend_after'))
+            : null;
+        $wait = $availableAt && now()->lt($availableAt) ? now()->diffInSeconds($availableAt) : 0;
+        if ($wait > 0) return back()->withErrors(['code' => "Podrás solicitar otro código en {$wait} segundos."]);
+
+        $this->issueDonorAccessCode($donor);
+
+        return back()->with('status', 'Enviamos un nuevo código. El anterior ya no es válido.');
     }
 
     public function verified(DonorCardService $cardService): View|RedirectResponse
@@ -176,6 +254,25 @@ class IdentityVerificationController extends Controller
 
         event(new Lockout($request));
         $this->throwRateLimitedException($request, $key);
+    }
+
+    private function issueDonorAccessCode(object $donor): void
+    {
+        $code = (string) random_int(100000, 999999);
+        DB::table('donor_access_codes')->updateOrInsert(
+            ['donor_id' => $donor->id],
+            [
+                'code_hash' => Hash::make($code),
+                'attempts' => 0,
+                'expires_at' => null,
+                'consumed_at' => null,
+                'last_sent_at' => now(),
+                'updated_at' => now(),
+                'created_at' => now(),
+            ],
+        );
+
+        Mail::to($donor->email)->send(new DonorAccessCodeMail((string) ($donor->first_name ?? ''), $code));
     }
 
     private function throwRateLimitedException(VerifyIdentityRequest $request, string $key): never

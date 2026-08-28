@@ -25,15 +25,20 @@ Route::get('/registro/captcha.svg', [IdentityVerificationController::class, 'cap
 Route::post('/registro/captcha/renovar', [IdentityVerificationController::class, 'refreshCaptcha'])->name('registration.captcha.refresh');
 Route::post('/registro/validar-identidad', [IdentityVerificationController::class, 'store'])->name('registration.identity.store');
 Route::middleware(['identity.verified', 'donor.session'])->group(function () {
-    Route::get('/registro/identidad-validada', [IdentityVerificationController::class, 'verified'])->name('registration.identity.verified');
+    Route::get('/registro/verificar-correo', [IdentityVerificationController::class, 'createEmailCode'])->name('registration.email-code.create');
+    Route::post('/registro/verificar-correo', [IdentityVerificationController::class, 'verifyEmailCode'])->name('registration.email-code.verify');
+    Route::post('/registro/verificar-correo/reenviar', [IdentityVerificationController::class, 'resendEmailCode'])->name('registration.email-code.resend');
+    Route::get('/registro/identidad-validada', [IdentityVerificationController::class, 'verified'])->middleware('donor.email.verified')->name('registration.identity.verified');
     Route::post('/registro/actividad', DonorSessionActivityController::class)->name('registration.session.activity');
     Route::get('/registro/datos', [DonorRegistrationController::class, 'create'])->name('registration.form');
     Route::post('/registro/datos', [DonorRegistrationController::class, 'store'])->name('registration.store');
-    Route::post('/registro/baja', [DonorRegistrationController::class, 'withdraw'])->name('registration.withdraw');
-    Route::get('/registro/reactivar', [DonorRegistrationController::class, 'reactivationForm'])->name('registration.reactivation.form');
-    Route::post('/registro/reactivar', [DonorRegistrationController::class, 'reactivate'])->name('registration.reactivation.store');
-    Route::get('/registro/actualizar', [DonorRegistrationController::class, 'updateForm'])->name('registration.update.form');
-    Route::post('/registro/actualizar', [DonorRegistrationController::class, 'update'])->name('registration.update.store');
+    Route::middleware('donor.email.verified')->group(function () {
+        Route::post('/registro/baja', [DonorRegistrationController::class, 'withdraw'])->name('registration.withdraw');
+        Route::get('/registro/reactivar', [DonorRegistrationController::class, 'reactivationForm'])->name('registration.reactivation.form');
+        Route::post('/registro/reactivar', [DonorRegistrationController::class, 'reactivate'])->name('registration.reactivation.store');
+        Route::get('/registro/actualizar', [DonorRegistrationController::class, 'updateForm'])->name('registration.update.form');
+        Route::post('/registro/actualizar', [DonorRegistrationController::class, 'update'])->name('registration.update.store');
+    });
 });
 Route::get('/registro/completado', [DonorRegistrationController::class, 'completed'])->name('registration.completed');
 Route::get('/registro/carnet/{donor}/imprimir', [DonorCardController::class, 'registrationPrint'])->whereNumber('donor')->name('registration.card.print');
@@ -43,6 +48,9 @@ Route::get('/verificar-carnet/{token}', [DonorCardController::class, 'verify'])-
 
 Route::middleware('guest')->group(function () {
     Route::get('/administracion/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/administracion/login/codigo', [AuthenticatedSessionController::class, 'sendCode'])->name('login.code.send');
+    Route::post('/administracion/login/codigo/verificar', [AuthenticatedSessionController::class, 'verifyCode'])->name('login.code.verify');
+    Route::post('/administracion/login/codigo/reenviar', [AuthenticatedSessionController::class, 'resendCode'])->name('login.code.resend');
     Route::post('/administracion/login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 });
 

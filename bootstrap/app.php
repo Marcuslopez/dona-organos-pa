@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureAdminSessionIsActive;
 use App\Http\Middleware\EnsureDonorSessionIsActive;
+use App\Http\Middleware\EnsureDonorEmailCodeIsVerified;
 use App\Http\Middleware\EnsureIdentityIsVerified;
 use App\Http\Middleware\EnsurePasswordWasChanged;
 use App\Http\Middleware\EnsureUserIsActive;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => EnsureUserIsActive::class,
             'admin.session' => EnsureAdminSessionIsActive::class,
             'donor.session' => EnsureDonorSessionIsActive::class,
+            'donor.email.verified' => EnsureDonorEmailCodeIsVerified::class,
             'identity.verified' => EnsureIdentityIsVerified::class,
             'master' => EnsureUserIsMaster::class,
             'password.changed' => EnsurePasswordWasChanged::class,

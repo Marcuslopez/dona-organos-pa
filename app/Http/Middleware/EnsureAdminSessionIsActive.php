@@ -21,6 +21,14 @@ class EnsureAdminSessionIsActive
         $idleTimeout = max(1, (int) config('admin_session.idle_timeout'));
         $maxLifetime = max(0, (int) config('admin_session.max_lifetime'));
 
+        if ($request->user()?->active_session_id && $request->user()->active_session_id !== $request->session()->getId()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->with('status', 'La sesión fue cerrada porque se inició sesión en otro equipo o navegador.');
+        }
+
         $idleExpired = ($now - $lastActivity) >= $idleTimeout;
         $absoluteExpired = $maxLifetime > 0 && ($now - $startedAt) >= $maxLifetime;
 
