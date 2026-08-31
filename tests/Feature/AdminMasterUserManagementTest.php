@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AdminMasterUserManagementTest extends TestCase
@@ -33,6 +34,7 @@ class AdminMasterUserManagementTest extends TestCase
 
     public function test_a_master_can_create_an_administrator_with_a_temporary_password(): void
     {
+        Mail::fake();
         $master = User::factory()->create(['role' => 'master', 'is_active' => true]);
 
         $response = $this->actingAs($master)->post(route('admin.users.store'), [
@@ -42,7 +44,6 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '1',
             'password' => 'TemporaryAdmin123',
             'password_confirmation' => 'TemporaryAdmin123',
-            'current_master_password' => 'password',
         ]);
 
         $response->assertRedirect(route('admin.users.index'));
@@ -50,6 +51,9 @@ class AdminMasterUserManagementTest extends TestCase
         $this->assertTrue($user->must_change_password);
         $this->assertSame($master->id, $user->created_by);
         $this->assertTrue(Hash::check('TemporaryAdmin123', $user->password));
+        Mail::assertSent(\App\Mail\AdministrativeTemporaryPasswordMail::class, function ($mail) use ($user): bool {
+            return $mail->hasTo($user->email) && $mail->temporaryPassword === 'TemporaryAdmin123';
+        });
         $this->assertDatabaseHas('admin_user_audits', [
             'actor_user_id' => $master->id,
             'target_user_id' => $user->id,
@@ -68,7 +72,8 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '0',
             'password' => '',
             'password_confirmation' => '',
-            'current_master_password' => 'password',
+            'reset_password' => '0',
+            'unlock_access' => '0',
         ]);
 
         $response->assertSessionHasErrors('role');
@@ -89,12 +94,69 @@ class AdminMasterUserManagementTest extends TestCase
             'is_active' => '0',
             'password' => '',
             'password_confirmation' => '',
-            'current_master_password' => 'password',
+            'reset_password' => '0',
+            'unlock_access' => '0',
         ]);
 
         $response->assertRedirect(route('admin.users.index'));
         $this->assertSame('administrator', $target->fresh()->role);
         $this->assertFalse($target->fresh()->is_active);
+    }
+
+    public function test_a_master_can_reset_an_administrator_password_and_the_temporary_password_is_emailed(): void
+    {
+        Mail::fake();
+        $master = User::factory()->create(['role' => 'master', 'is_active' => true]);
+        $administrator = User::factory()->create(['role' => 'administrator', 'is_active' => true]);
+
+        $this->actingAs($master)->put(route('admin.users.update', $administrator), [
+            'name' => $administrator->name,
+            'email' => $administrator->email,
+            'role' => 'administrator',
+            'is_active' => '1',
+            'password' => 'ReplacementAdmin123',
+            'password_confirmation' => 'ReplacementAdmin123',
+            'reset_password' => '1',
+            'unlock_access' => '0',
+        ])->assertRedirect(route('admin.users.index'));
+
+        $administrator->refresh();
+        $this->assertTrue($administrator->must_change_password);
+        $this->assertTrue(Hash::check('ReplacementAdmin123', $administrator->password));
+        Mail::assertSent(\App\Mail\AdministrativeTemporaryPasswordMail::class, function ($mail) use ($administrator): bool {
+            return $mail->hasTo($administrator->email) && $mail->temporaryPassword === 'ReplacementAdmin123';
+        });
+    }
+
+    public function test_master_can_unlock_a_locked_administrator_and_the_action_is_audited(): void
+    {
+        $master = User::factory()->create(['role' => 'master', 'is_active' => true]);
+        $administrator = User::factory()->create([
+            'role' => 'administrator',
+            'is_active' => true,
+            'login_locked_at' => now()->subMinute(),
+            'login_locked_until' => now()->addMinutes(3),
+            'login_lock_reason' => 'contraseña',
+        ]);
+
+        $this->actingAs($master)->put(route('admin.users.update', $administrator), [
+            'name' => $administrator->name,
+            'email' => $administrator->email,
+            'role' => 'administrator',
+            'is_active' => '1',
+            'reset_password' => '0',
+            'unlock_access' => '1',
+        ])->assertRedirect(route('admin.users.index'));
+
+        $administrator->refresh();
+        $this->assertNull($administrator->login_locked_at);
+        $this->assertNull($administrator->login_locked_until);
+        $this->assertNull($administrator->login_lock_reason);
+        $this->assertDatabaseHas('admin_user_audits', [
+            'actor_user_id' => $master->id,
+            'target_user_id' => $administrator->id,
+            'action' => 'account_unlocked',
+        ]);
     }
 
     public function test_a_user_with_a_temporary_password_must_change_it_before_entering_the_dashboard(): void

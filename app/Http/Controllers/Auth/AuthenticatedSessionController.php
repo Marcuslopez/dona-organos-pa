@@ -32,13 +32,23 @@ class AuthenticatedSessionController extends Controller
 
     public function sendCode(Request $request): RedirectResponse
     {
-        $data = $request->validate(['email' => ['required', 'email', 'max:255']]);
+        $data = $request->validate(['email' => ['required', 'email', 'max:255']], [
+            'email.email' => 'Ingresa un correo electrónico válido.',
+        ]);
         $email = Str::lower(trim($data['email']));
         $user = User::query()->where('email', $email)->where('is_active', true)->first();
 
         $request->session()->forget('admin_login');
 
-        if ($user && ! $this->isLocked($user)) {
+        if ($user && $this->isLocked($user)) {
+            $seconds = now()->diffInSeconds($user->login_locked_until, false);
+
+            return redirect()->route('login')->withErrors([
+                'email' => "Esta cuenta está bloqueada temporalmente. Intenta nuevamente en {$seconds} segundos.",
+            ]);
+        }
+
+        if ($user) {
             $this->sendLoginCode($user);
             $request->session()->put('admin_login', ['user_id' => $user->id, 'email' => $user->email, 'code_sent_at' => now()->timestamp]);
         }
@@ -48,7 +58,9 @@ class AuthenticatedSessionController extends Controller
 
     public function verifyCode(Request $request): RedirectResponse
     {
-        $data = $request->validate(['code' => ['required', 'digits:6']]);
+        $data = $request->validate(['code' => ['required', 'digits:6']], [
+            'code.digits' => 'El código debe contener exactamente seis dígitos.',
+        ]);
         $challenge = $request->session()->get('admin_login');
         $user = is_array($challenge) ? User::find($challenge['user_id'] ?? null) : null;
         $record = $user ? DB::table('admin_login_codes')->where('user_id', $user->id)->first() : null;
@@ -67,9 +79,12 @@ class AuthenticatedSessionController extends Controller
             ]);
 
             if ($attempts >= (int) config('access_security.admin.code_max_attempts')) {
+                $this->lockAccount($user, 'código de verificación', $request);
                 $request->session()->forget('admin_login');
 
-                return redirect()->route('login')->withErrors(['code' => 'El código no es válido. Solicita uno nuevo.']);
+                return redirect()->route('login')->withErrors([
+                    'email' => 'El acceso fue bloqueado temporalmente por intentos fallidos. Intenta nuevamente en '.config('access_security.admin.lockout_seconds').' segundos.',
+                ]);
             }
 
             $remaining = (int) config('access_security.admin.code_max_attempts') - $attempts;
@@ -123,20 +138,25 @@ class AuthenticatedSessionController extends Controller
 
         if ($this->isLocked($user)) {
             $seconds = now()->diffInSeconds($user->login_locked_until, false);
-            throw ValidationException::withMessages(['email' => "Esta cuenta está bloqueada temporalmente. Intenta nuevamente en {$seconds} segundos."]);
+            $request->session()->forget('admin_login');
+
+            return redirect()->route('login')->withErrors([
+                'email' => "Esta cuenta está bloqueada temporalmente. Intenta nuevamente en {$seconds} segundos.",
+            ]);
         }
 
         if (! Hash::check($request->validated('password'), $user->password)) {
             $attempts = $user->failed_login_attempts + 1;
             $updates = ['failed_login_attempts' => $attempts];
             if ($attempts >= (int) config('access_security.admin.password_max_attempts')) {
-                $updates['login_locked_until'] = now()->addSeconds(max(1, (int) config('access_security.admin.lockout_seconds')));
-                $updates['failed_login_attempts'] = 0;
-            }
-            $user->forceFill($updates)->save();
-            if (isset($updates['login_locked_until'])) {
-                User::query()->where('role', 'master')->where('is_active', true)->get()
-                    ->each(fn (User $master) => Mail::to($master->email)->send(new AdminAccountLockedMail($user)));
+                $this->lockAccount($user, 'contraseña', $request);
+                $request->session()->forget('admin_login');
+
+                return redirect()->route('login')->withErrors([
+                    'email' => 'El acceso fue bloqueado temporalmente por intentos fallidos. Intenta nuevamente en '.config('access_security.admin.lockout_seconds').' segundos.',
+                ]);
+            } else {
+                $user->forceFill($updates)->save();
             }
             throw ValidationException::withMessages(['password' => 'Las credenciales proporcionadas no son correctas.']);
         }
@@ -177,6 +197,36 @@ class AuthenticatedSessionController extends Controller
     private function isLocked(User $user): bool
     {
         return $user->login_locked_until?->isFuture() ?? false;
+    }
+
+    private function lockAccount(User $user, string $reason, Request $request): void
+    {
+        $lockedAt = now();
+        $lockedUntil = $lockedAt->copy()->addSeconds(max(1, (int) config('access_security.admin.lockout_seconds')));
+        $user->forceFill([
+            'failed_login_attempts' => 0,
+            'login_locked_at' => $lockedAt,
+            'login_locked_until' => $lockedUntil,
+            'login_lock_reason' => $reason,
+        ])->save();
+
+        User::query()->where('role', 'master')->where('is_active', true)->get()
+            ->each(fn (User $master) => Mail::to($master->email)->send(new AdminAccountLockedMail($user, $reason)));
+
+        DB::table('admin_login_codes')
+            ->where('user_id', $user->id)
+            ->whereNull('consumed_at')
+            ->update(['consumed_at' => now(), 'updated_at' => now()]);
+
+        DB::table('admin_user_audits')->insert([
+            'actor_user_id' => null,
+            'target_user_id' => $user->id,
+            'action' => 'account_locked',
+            'changes' => json_encode(['reason' => $reason, 'locked_until' => $lockedUntil->toDateTimeString()], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            'ip_address' => $request->ip(),
+            'user_agent' => mb_substr((string) $request->userAgent(), 0, 1000),
+            'created_at' => $lockedAt,
+        ]);
     }
 
     private function sendLoginCode(User $user): void

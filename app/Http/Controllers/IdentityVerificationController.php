@@ -156,7 +156,9 @@ class IdentityVerificationController extends Controller
 
     public function verifyEmailCode(Request $request): RedirectResponse
     {
-        $data = $request->validate(['code' => ['required', 'digits:6']]);
+        $data = $request->validate(['code' => ['required', 'digits:6']], [
+            'code.digits' => 'El código debe contener exactamente seis dígitos.',
+        ]);
         $verification = $request->session()->get('identity_verification');
         $donorId = is_array($verification) ? (int) ($verification['donor_id'] ?? 0) : 0;
         $record = $donorId ? DB::table('donor_access_codes')->where('donor_id', $donorId)->first() : null;

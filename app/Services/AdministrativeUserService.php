@@ -37,8 +37,10 @@ class AdministrativeUserService
             $this->guardProtectedMaster($user, $data, $actor);
             $before = Arr::only($user->toArray(), ['name', 'email', 'role', 'is_active', 'must_change_password']);
             $attributes = Arr::only($data, ['name', 'email', 'role', 'is_active']);
+            $resetPassword = (bool) ($data['reset_password'] ?? false);
+            $unlockAccess = (bool) ($data['unlock_access'] ?? false) && $user->login_locked_until?->isFuture();
 
-            if (! empty($data['password'])) {
+            if ($resetPassword) {
                 $attributes['password'] = $data['password'];
                 $attributes['must_change_password'] = true;
             }
@@ -53,12 +55,29 @@ class AdministrativeUserService
                 }
             }
 
-            if (! empty($data['password'])) {
+            if ($resetPassword) {
                 $changes['password'] = ['from' => 'unchanged', 'to' => 'temporary_password_assigned'];
             }
 
             if ($changes !== []) {
                 $this->audit($actor, $user, 'updated', $changes, $request);
+            }
+
+            if ($unlockAccess) {
+                $lockChanges = [
+                    'reason' => $user->login_lock_reason,
+                    'locked_at' => $user->login_locked_at?->toDateTimeString(),
+                    'locked_until' => $user->login_locked_until?->toDateTimeString(),
+                ];
+
+                $user->forceFill([
+                    'failed_login_attempts' => 0,
+                    'login_locked_at' => null,
+                    'login_locked_until' => null,
+                    'login_lock_reason' => null,
+                ])->save();
+
+                $this->audit($actor, $user, 'account_unlocked', $lockChanges, $request);
             }
 
             return $user;

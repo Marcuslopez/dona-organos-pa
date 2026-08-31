@@ -5,16 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAdministrativeUserRequest;
 use App\Http\Requests\Admin\UpdateAdministrativeUserRequest;
+use App\Mail\AdministrativeTemporaryPasswordMail;
 use App\Models\User;
 use App\Services\AdministrativeUserService;
-use App\Services\MasterReauthenticationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class AdministrativeUserController extends Controller
 {
-    public function __construct(private readonly AdministrativeUserService $service, private readonly MasterReauthenticationService $reauthentication) {}
+    public function __construct(private readonly AdministrativeUserService $service) {}
 
     public function index(Request $request): View
     {
@@ -39,17 +40,26 @@ class AdministrativeUserController extends Controller
 
     public function store(StoreAdministrativeUserRequest $request): RedirectResponse
     {
-        $this->reauthentication->verify($request);
-        $this->service->create($request->validated(), $request->user(), $request);
+        $data = $request->validated();
+        $user = $this->service->create($data, $request->user(), $request);
+        Mail::to($user)->send(new AdministrativeTemporaryPasswordMail($user, $data['password']));
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario administrativo creado correctamente.');
+        return redirect()->route('admin.users.index')->with('status', 'Usuario administrativo creado y contraseña temporal enviada al correo indicado.');
     }
 
     public function update(UpdateAdministrativeUserRequest $request, User $user): RedirectResponse
     {
-        $this->reauthentication->verify($request);
-        $this->service->update($user, $request->validated(), $request->user(), $request);
+        $data = $request->validated();
+        $user = $this->service->update($user, $data, $request->user(), $request);
 
-        return redirect()->route('admin.users.index')->with('status', 'Usuario administrativo actualizado correctamente.');
+        if ($data['reset_password']) {
+            Mail::to($user)->send(new AdministrativeTemporaryPasswordMail($user, $data['password']));
+        }
+
+        $status = 'Usuario administrativo actualizado correctamente.';
+        if ($data['reset_password']) $status .= ' Se generó y envió una contraseña temporal al correo indicado.';
+        if ($data['unlock_access']) $status .= ' Se solicitó el desbloqueo de acceso.';
+
+        return redirect()->route('admin.users.index')->with('status', $status);
     }
 }

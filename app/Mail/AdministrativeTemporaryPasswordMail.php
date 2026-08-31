@@ -9,19 +9,19 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AdminAccountLockedMail extends Mailable
+class AdministrativeTemporaryPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public User $lockedUser, public string $reason) {}
+    public function __construct(public User $user, public string $temporaryPassword) {}
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Alerta: cuenta administrativa bloqueada temporalmente');
+        return new Envelope(subject: 'Acceso administrativo: contraseña temporal | DONA ÓRGANOS PANAMÁ');
     }
 
     public function content(): Content
     {
-        return new Content(view: 'emails.security.admin-account-locked');
+        return new Content(view: 'emails.security.administrative-temporary-password');
     }
 }

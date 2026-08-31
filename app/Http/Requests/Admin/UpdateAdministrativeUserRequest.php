@@ -21,7 +21,9 @@ class UpdateAdministrativeUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($target)],
             'role' => ['required', Rule::in(['master', 'administrator'])],
-            'password' => ['nullable', 'confirmed', Password::min(12)->letters()->mixedCase()->numbers()],
+            'reset_password' => ['required', 'boolean'],
+            'password' => [Rule::requiredIf(fn (): bool => $this->boolean('reset_password')), 'nullable', 'confirmed', Password::min(12)->letters()->mixedCase()->numbers()],
+            'unlock_access' => ['required', 'boolean'],
             'is_active' => ['required', 'boolean'],
         ];
     }
@@ -32,6 +34,8 @@ class UpdateAdministrativeUserRequest extends FormRequest
             'name' => trim((string) $this->input('name')),
             'email' => mb_strtolower(trim((string) $this->input('email'))),
             'is_active' => $this->boolean('is_active'),
+            'reset_password' => $this->boolean('reset_password'),
+            'unlock_access' => $this->boolean('unlock_access'),
         ]);
     }
 }

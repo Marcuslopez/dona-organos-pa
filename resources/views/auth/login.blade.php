@@ -18,17 +18,17 @@
             @if (session('status'))<div class="alert alert-warning" role="status">{{ session('status') }}</div>@endif
 
             @if (! $codeSent && ! $codeVerified)
-                <form method="POST" action="{{ route('login.code.send') }}" data-login-form novalidate>
+                <form method="POST" action="{{ route('login.code.send') }}" data-login-form data-email-code-request novalidate>
                     @csrf
                     <div class="mb-4"><label class="form-label" for="email">Correo electrónico</label><input class="form-control @error('email') is-invalid @enderror" id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="username" autofocus required>@error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-                    <div class="auth-form-actions"><button class="btn btn-primary auth-submit" type="submit">Enviar código</button><a class="btn btn-primary auth-return" href="{{ route('home') }}">Volver al inicio</a></div>
+                    <div class="auth-form-actions"><button class="btn btn-primary auth-submit" type="submit" disabled>Enviar código</button><a class="btn btn-primary auth-return" href="{{ route('home') }}">Volver al inicio</a></div>
                 </form>
             @elseif($codeSent)
-                <form method="POST" action="{{ route('login.code.verify') }}" data-login-form novalidate>
+                <form method="POST" action="{{ route('login.code.verify') }}" data-login-form data-verification-code novalidate>
                     @csrf
                     <p class="form-text mb-3">Código enviado a {{ \Illuminate\Support\Str::mask($challenge['email'], '*', 2, max(strlen($challenge['email']) - 6, 1)) }}.</p>
-                    <div class="mb-4"><label class="form-label" for="code">Código de verificación</label><input class="form-control @error('code') is-invalid @enderror" id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus required>@error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
-                    <div class="auth-form-actions"><button class="btn btn-primary auth-submit" type="submit">Verificar código</button><a class="btn btn-primary auth-return" href="{{ route('login', ['reiniciar' => 1]) }}">Usar otro correo</a></div>
+                    <div class="mb-4"><label class="form-label" for="code">Código de verificación</label><input class="form-control @error('code') is-invalid @enderror" id="code" name="code" type="tel" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" autofocus required><div class="form-text">Ingresa los seis dígitos recibidos.</div>@error('code')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+                    <div class="auth-form-actions"><button class="btn btn-primary auth-submit" type="submit" disabled>Verificar código</button><a class="btn btn-primary auth-return" href="{{ route('login', ['reiniciar' => 1]) }}">Usar otro correo</a></div>
                 </form>
                 <form method="POST" action="{{ route('login.code.resend') }}" class="mt-3 text-end">@csrf<button class="btn btn-outline-primary" type="submit">Reenviar código</button></form>
             @else
